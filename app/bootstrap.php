@@ -9,7 +9,7 @@ function initialize($basePath)
     require_once  $basePath . '/app/library/Config.php';
     Config::init( $basePath . '/app/config');
 
-    if ( conf('public.base.path') !== $basePath ) {
+    if ( conf('app.path') !== $basePath ) {
        show('base path setting error!');
        exit;
     }
