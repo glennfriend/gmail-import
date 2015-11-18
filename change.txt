@@ -1,0 +1,9 @@
+==== 1.0.0 ====
+Major Highlights
+    + 讀取 gmail 並且寫入資料表
+Improvements
+
+Changes
+    + 必須在 PHP 5.5+ 執行
+    + 只能在 command line 執行
+
