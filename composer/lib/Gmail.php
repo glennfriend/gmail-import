@@ -1,6 +1,7 @@
 <?php
 
-namespace Lib;
+namespace lib;
+
 use Lib;
 
 /**
@@ -66,8 +67,6 @@ class Gmail
     private static function _accessEmails($num, $isSettingRead)
     {
         self::$errorMessage = null;
-        $num = 0;
-        $num = 2;
 
         $inbox = self::_getInboxes();
         if (!$inbox) {
@@ -75,7 +74,7 @@ class Gmail
         }
 
         $emails = imap_search($inbox, 'UNSEEN');
-        $readKey = ( $isSettingRead ? 0 : FT_PEEK );
+        $readKey = ($isSettingRead ? 0 : FT_PEEK);
 
         $i = 0;
         $infos = [];
@@ -122,7 +121,7 @@ class Gmail
         $password = Config::get('gmail.passwd');
 
         ob_start();
-            $inbox = imap_open($hostname, $email, $password);
+        $inbox = imap_open($hostname, $email, $password);
         ob_end_clean();
 
         if ($errors = imap_errors()) {
@@ -141,5 +140,4 @@ class Gmail
         $inbox = self::_getInboxes();
         imap_close($inbox);
     }
-
 }

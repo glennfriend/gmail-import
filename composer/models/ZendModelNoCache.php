@@ -7,7 +7,7 @@
         http://www.maltblue.com/tutorial/zend-db-sql-select-easy-where-clauses
         http://framework.zend.com/manual/2.0/en/modules/zend.db.sql.html
 */
-class ZendModel
+class ZendModelNoCache
 {
 
     /**
@@ -31,21 +31,12 @@ class ZendModel
     protected $pk = 'id';
 
     /**
-     * you can rewrite it
-     * @return string
-     */
-    public function getFullCacheKey( $value, $key )
-    {
-        return "CACHE_MODELS.". trim($key) .".". trim($value);
-    }
-
-    /**
      *  任何傳回錯誤的狀態, 可以檢查是否有 model error 物件訊息
      *  @return error info array
      */
     public function getError()
     {
-        if ( !$this->error ) {
+        if (!$this->error) {
             return array(
                 'is_error' => false,
                 'message'  => '',
@@ -73,23 +64,22 @@ class ZendModel
     }
 
     // --------------------------------------------------------------------------------
-    // 
+    //
     // --------------------------------------------------------------------------------
 
-    static protected $adapter = null;
+    protected static $adapter = null;
 
     public function getAdapter()
     {
-        if ( self::$adapter ) {
+        if (self::$adapter) {
             return self::$adapter;
         }
                 
         self::$adapter = new Zend\Db\Adapter\Adapter(array(
             'driver'    => 'Pdo_Mysql',
-            'dsn'       => 'mysql:host='. Config::get('db.mysql.host') .';dbname='. Config::get('db.mysql.db'),
-         // 'database'  => Config::get('db.mysql.db'),
-            'username'  => Config::get('db.mysql.user'),
-            'password'  => Config::get('db.mysql.pass'),
+            'dsn'       => 'mysql:host='. Lib\Config::get('db.mysql.host') .';dbname='. Lib\Config::get('db.mysql.db'),
+            'username'  => Lib\Config::get('db.mysql.user'),
+            'password'  => Lib\Config::get('db.mysql.pass'),
             'driver_options' => array(
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
             )
@@ -104,23 +94,16 @@ class ZendModel
      *  @param Zend\Db\Sql\Select
      *  @return statement result object
      */
-    public function query( $select )
+    public function query($select)
     {
         $adapter = $this->getAdapter();
         $zendSql = new Zend\Db\Sql\Sql($adapter);
-
-        // log
-        LogBrg::sql( $select->getSqlString( $adapter->getPlatform() ) );
-
-        // developer tool
-        MonitorManager::sqlQuery( $select->getSqlString( $adapter->getPlatform() ) );
 
         $this->error = null;
         try {
             $statement = $zendSql->prepareStatementForSqlObject($select);
             $results = $statement->execute();
-        }
-        catch( Exception $e ) {
+        } catch (Exception $e) {
             $this->error = $e;
             return false;
         }
@@ -136,23 +119,16 @@ class ZendModel
      *      Zend\Db\Sql\Delete
      *  @return statement result object
      */
-    public function execute( $write )
+    public function execute($write)
     {
         $adapter = $this->getAdapter();
-        $sql = $write->getSqlString( $adapter->getPlatform() );
-
-        // log
-        LogBrg::sql($sql);
-
-        // developer tool
-        MonitorManager::executeQuery( $write->getSqlString( $adapter->getPlatform() ) );
+        $sql = $write->getSqlString($adapter->getPlatform());
 
         $this->error = null;
         try {
-            $statement = $adapter->query( $sql );
+            $statement = $adapter->query($sql);
             $result = $statement->execute();
-        }
-        catch( Exception $e ) {
+        } catch (Exception $e) {
             // insert/update/delete error
             // 例如: 重覆的鍵值 引發了 衝突
             $this->error = $e;
@@ -173,16 +149,16 @@ class ZendModel
      */
     protected function addObject($object, $isReturnInsertId=false)
     {
-        $row = $this->objectToArray( $object );
+        $row = $this->objectToArray($object);
 
-        $insert = new Zend\Db\Sql\Insert( $this->tableName );
+        $insert = new Zend\Db\Sql\Insert($this->tableName);
         $insert->values($row);
         $result = $this->execute($insert);
-        if( !$result ) {
+        if (!$result) {
             return false;
         }
 
-        if( $isReturnInsertId ) {
+        if ($isReturnInsertId) {
             return (int) $result->getGeneratedValue();
         }
         return true;
@@ -195,19 +171,19 @@ class ZendModel
      * @param object
      * @return int, affected row count
      */
-    protected function updateObject( $object )
+    protected function updateObject($object)
     {
-        $row = $this->objectToArray( $object );
+        $row = $this->objectToArray($object);
         $pk = $this->pk;
         $pkValue = $row[$pk];
         unset($row[$pk]);
 
-        $update = new Zend\Db\Sql\Update( $this->tableName );
+        $update = new Zend\Db\Sql\Update($this->tableName);
         $update->where(array( $pk => $pkValue ));
         $update->set($row);
 
         $result = $this->execute($update);
-        if( !$result ) {
+        if (!$result) {
             return false;
         }
         return $result->count();
@@ -218,13 +194,13 @@ class ZendModel
      * @param key
      * @return int, affected row count
      */
-    protected function deleteObject( $key )
+    protected function deleteObject($key)
     {
-        $delete = new Zend\Db\Sql\Delete( $this->tableName );
+        $delete = new Zend\Db\Sql\Delete($this->tableName);
         $delete->where(array( $this->pk => $key));
 
         $result = $this->execute($delete);
-        if( !$result ) {
+        if (!$result) {
             return false;
         }
         return $result->count();
@@ -233,21 +209,20 @@ class ZendModel
     /**
      *  資料從 object 寫入到 database 之前要做資料轉換的動作
      */
-    protected function objectToArray( $object )
+    protected function objectToArray($object)
     {
         $data = array();
-        foreach ( $object->getTableDefinition() as $key => $item ) {
-
+        foreach ($object->getTableDefinition() as $key => $item) {
             $type   = $item['type'];
             $field  = $item['field'];
             $method = $item['storage'];
             $value  = $object->$method();
 
-            if( is_object($value) || is_array($value) ) {
+            if (is_object($value) || is_array($value)) {
                 $value = serialize($value);
             }
 
-            switch ( $type ) {
+            switch ($type) {
                 case 'timestamp':
                 case 'datetime':
                     $value = date('Y-m-d H:i:s', (int) $value);
@@ -270,12 +245,12 @@ class ZendModel
      *  get ZF2 Zend Db Select
      *  @return Zend\Db\Sql\Select
      */
-    protected function getDbSelect( $isSetDefaultValue=true )
+    protected function getDbSelect($isSetDefaultValue=true)
     {
         $select = new Zend\Db\Sql\Select();
-        if ( $isSetDefaultValue ) {
+        if ($isSetDefaultValue) {
             $select->columns(array($this->pk));
-            $select->from( $this->tableName );
+            $select->from($this->tableName);
         }
         return $select;
     }
@@ -287,34 +262,23 @@ class ZendModel
      * @param string - cache key
      * @return object or false
      */
-    protected function getObject( $field, $value, $cacheKey=null )
+    protected function getObject($field, $value)
     {
-        if ( $cacheKey ) {
-            $fullCacheKey = self::getFullCacheKey( $value, $cacheKey );
-            $object = CacheBrg::get( $fullCacheKey );
-            if( $object ) {
-                return $object;
-            }
-        }
-
         $select = $this->getDbSelect();
         $select->columns(array('*'));
         $select->where(array( $field => $value ));
 
         $result = $this->query($select);
-        if( !$result ) {
+        if (!$result) {
             return false;
         }
 
         $row = $result->current();
-        if( !$row ) {
+        if (!$row) {
             return false;
         }
 
-        $object = $this->mapRow( $row );
-        if ( $cacheKey ) {
-            CacheBrg::set( $fullCacheKey, $object );
-        }
+        $object = $this->mapRow($row);
         return $object;
     }
 
@@ -325,32 +289,32 @@ class ZendModel
      *  @param $option   - option array
      *  @return objects or empty array
      */
-    protected function findObjects( $select, $option=array() )
+    protected function findObjects($select, $option=array())
     {
         $orderBy      = isset($option['_order'])        ? $option['_order']        : '' ;
         $page         = isset($option['_page'])         ? $option['_page']         : 1  ;
         $itemsPerPage = isset($option['_itemsPerPage']) ? $option['_itemsPerPage'] : Config::get('db.items_per_page');
 
-        if ( $orderBy ) {
-            $select->order( trim($orderBy) );
+        if ($orderBy) {
+            $select->order(trim($orderBy));
         }
-        if( -1 !== $page ) {
+        if (-1 !== $page) {
             $page = (int) $page;
-            if( $page == 0 ) {
+            if ($page == 0) {
                 $page = 1;
             }
-            $select->limit( $itemsPerPage );
-            $select->offset( ($page-1)*$itemsPerPage );
+            $select->limit($itemsPerPage);
+            $select->offset(($page-1)*$itemsPerPage);
         }
         $result = $this->query($select);
-        if ( !$result ) {
+        if (!$result) {
             return array();
         }
 
         $objects = array();
         $getMethod = $this->getMethod;
-        while( $row = $result->next() ) {
-            $objects[] = $this->$getMethod( $row[$this->pk] );
+        while ($row = $result->next()) {
+            $objects[] = $this->$getMethod($row[$this->pk]);
         };
         return $objects;
     }
@@ -360,19 +324,18 @@ class ZendModel
      * @param $condition - sql condition
      * @return int
      */
-    protected function numFindObjects( $select )
+    protected function numFindObjects($select)
     {
         $param = 'count('. $this->pk .')';
         $expression = array('total' => new \Zend\Db\Sql\Expression($param));
-        $select->columns( $expression );
+        $select->columns($expression);
 
         $result = $this->query($select);
-        if( !$result ) {
+        if (!$result) {
             return 0;
         }
 
         $row = $result->current();
         return $row['total'];
     }
-
 }
