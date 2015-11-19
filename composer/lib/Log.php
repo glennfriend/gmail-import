@@ -1,5 +1,7 @@
 <?php
 
+namespace Lib;
+
 class Log
 {
 
@@ -18,6 +20,10 @@ class Log
      */
     public static function getPath()
     {
+        if (null === self::$_logPath) {
+            die('error - 6324734905763409573498546345634853453429403');
+        }
+
         return self::$_logPath;
     }
 
@@ -42,7 +48,7 @@ class Log
         if (!preg_match('/^[a-z0-9_\-\.]+$/i', $file)) {
             return;
         }
-    
+
         $filename = self::getPath() .'/'. $file;
         file_put_contents( $filename, $content."\n", FILE_APPEND );
     }

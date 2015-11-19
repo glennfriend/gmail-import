@@ -4,9 +4,45 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0bd426e989d73338246200e4705c037f",
-    "content-hash": "ff8569ba585fccfdb0f6e4f40d147256",
+    "hash": "a6aa24221ede72fba61d804215d6a682",
+    "content-hash": "fcfc85fc87dbba3422ce643e57456165",
     "packages": [
+        {
+            "name": "helper",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./helper/",
+                "reference": "",
+                "shasum": null
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Helper\\": ""
+                }
+            }
+        },
+        {
+            "name": "lib",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./lib/",
+                "reference": "",
+                "shasum": null
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Lib\\": ""
+                }
+            },
+            "description": "lib"
+        },
         {
             "name": "nette/mail",
             "version": "v2.2.4",

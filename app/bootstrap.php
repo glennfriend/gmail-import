@@ -6,9 +6,10 @@ function initialize($basePath)
     ini_set('html_errors','Off');
     ini_set('display_errors','On');
 
-    require_once  $basePath . '/app/library/Config.php';
-    Config::init( $basePath . '/app/config');
+    require_once $basePath . '/composer/vendor/autoload.php';
 
+    // init config
+    Lib\Config::init( $basePath . '/app/config');
     if ( conf('app.path') !== $basePath ) {
        show('base path setting error!');
        exit;
@@ -16,17 +17,14 @@ function initialize($basePath)
 
     date_default_timezone_set(conf('app.timezone'));
 
-
-    require_once $basePath . '/app/library/Log.php';
-    Log::init(   $basePath . '/var');
-
-    require_once $basePath . '/composer/vendor/autoload.php';
+    // init other
+    Lib\Log::init( $basePath . '/var');
 
 }
 
 function conf($key)
 {
-    return Config::get($key);
+    return Lib\Config::get($key);
 }
 
 function show($data, $writeLog=false )
@@ -40,7 +38,7 @@ function show($data, $writeLog=false )
     }
 
     if ($writeLog) {
-        Log::record($data);
+        Lib\Log::record($data);
     }
 
 }

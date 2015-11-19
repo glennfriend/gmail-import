@@ -1,5 +1,45 @@
 [
     {
+        "name": "helper",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "dist": {
+            "type": "path",
+            "url": "./helper/",
+            "reference": "",
+            "shasum": null
+        },
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Helper\\": ""
+            }
+        }
+    },
+    {
+        "name": "lib",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "dist": {
+            "type": "path",
+            "url": "./lib/",
+            "reference": "",
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.5"
+        },
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Lib\\": ""
+            }
+        },
+        "description": "lib"
+    },
+    {
         "name": "nette/utils",
         "version": "v2.3.6",
         "version_normalized": "2.3.6.0",

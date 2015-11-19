@@ -1,8 +1,11 @@
 <?php
+
+namespace Helper;
+
 use Nette\Mail\Message;
 use Nette\Mail\SendmailMailer;
 
-class MailHelper
+class Mail
 {
 
     public static function sendSuccess()

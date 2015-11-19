@@ -1,5 +1,5 @@
-<?php
 #!/usr/bin/env php -q
+<?php
 
 if (PHP_SAPI !== 'cli') {
     exit;
@@ -8,9 +8,6 @@ if (PHP_SAPI !== 'cli') {
 $basePath = dirname(__DIR__);
 require_once $basePath . '/app/bootstrap.php';
 initialize($basePath);
-
-//require_once $basePath . '/app/library/xxx.php';
-//require_once $basePath . '/app/helper/xxx.php';
 
 perform();
 exit;
@@ -33,7 +30,11 @@ function perform()
         show('---- debug mode ---- (你必須要輸入參數 exec 才會真正執行)');
     }
 
-    Log::record('start PHP '. phpversion() );
+    // test only
+    $i = new Inbox();
+    print_r($i);
+
+    Lib\Log::record('start PHP '. phpversion() );
     // xxxx();
 
     show("done", true);

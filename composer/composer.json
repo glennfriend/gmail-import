@@ -1,6 +1,22 @@
 {
-  "require" : {
-    "nette/mail": "2.2.*",
-    "zendframework/zend-db": "2.*"
-  }
+    "require" : {
+        "nette/mail": "2.2.*",
+        "zendframework/zend-db": "2.*",
+        "lib": "*",
+        "helper": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./helper"
+        },
+        {
+            "type": "path",
+            "url": "./lib"
+        }
+    ],
+    "autoload": {
+        "classmap": ["models"]
+    }
+    
 }

@@ -1,7 +1,6 @@
-# 申請 gmail 帳號
-要設定
-- 帳號
-- 密碼
+### 申請 gmail 帳號
+- 取得帳號
+- 取得密碼
 
 ### Environment
 - PHP 5.5
@@ -17,5 +16,5 @@ $ vi app/config/*.php
 
 ### Execute
 ```sh
-$ php public/index.php
+$ php shell/index.php
 ```
