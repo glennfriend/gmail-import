@@ -11,12 +11,12 @@ class Config
     /**
      *
      */
-    static protected $cf = array();
+    protected static $cf = array();
 
     /**
      *
      */
-    static public function init( $configPath )
+    public static function init( $configPath )
     {
         if ( !file_exists($configPath) ) {
             return false;
@@ -42,7 +42,7 @@ class Config
      *  @param int|string - $key
      *  @return any
      */
-    static public function get( $key )
+    public static function get( $key )
     {
         $value = self::soft($key);
         if ( null === $value ) {
@@ -66,7 +66,7 @@ class Config
      *  @param  any        - $default
      *  @return any
      */
-    static public function soft( $key, $default=null )
+    public static function soft( $key, $default=null )
     {
         $data = self::$cf;
         if (is_null($key)) {

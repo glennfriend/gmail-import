@@ -1,0 +1,27 @@
+
+install imap
+    apt-get install php-iamp libpam0g-dev
+
+    cd /usr/local
+    wget ftp://ftp.cac.washington.edu/imap/imap-2007f.tar.gz
+    tar -zxvf imap-2007f.tar.gz
+    rm imap-2007f.tar.gz
+    cd imap-2007*
+    make lr5
+
+    phpbrew ext install imap -- --with-kerberos --with-imap-ssl --with-imap=/usr/local/imap-2007f
+
+setting gmail
+
+    "轉寄和 POP/IMAP" > enable IMAP
+
+setting google account
+
+    https://myaccount.google.com/security
+    最下方  [允許安全性較低的應用程式] 設定處於停用狀態
+    改為    [允許安全性較低的應用程式] 設定處於啟用狀態
+    等一分鐘
+
+    englis version
+    Allow less secure apps => ON
+

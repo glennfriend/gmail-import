@@ -11,7 +11,7 @@ function initialize($basePath)
     // init config
     Lib\Config::init( $basePath . '/app/config');
     if ( conf('app.path') !== $basePath ) {
-       show('base path setting error!');
+       pr('base path setting error!');
        exit;
     }
 
@@ -27,20 +27,23 @@ function conf($key)
     return Lib\Config::get($key);
 }
 
-function show($data, $writeLog=false )
+function pr($data, $writeLog=false)
 {
     if (is_object($data) || is_array($data)) {
         print_r($data);
+
+        if ($writeLog) {
+            Lib\Log::record(print_r($data, true));
+        }
     }
     else {
         echo $data;
         echo "\n";
-    }
 
-    if ($writeLog) {
-        Lib\Log::record($data);
+        if ($writeLog) {
+            Lib\Log::record($data);
+        }
     }
-
 }
 
 /**
@@ -87,7 +90,6 @@ function getCliParam($key)
     }
 
     foreach ($allParams as $param) {
-
         $tmp = explode('=', $param);
         $name = $tmp[0];
         array_shift($tmp);

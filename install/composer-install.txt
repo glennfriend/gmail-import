@@ -1,0 +1,10 @@
+
+install composer
+
+    https://getcomposer.org
+
+install
+
+    cd composer
+    composer self-update
+    composer install

@@ -22,20 +22,26 @@ exit;
 function perform()
 {
     if ( phpversion() < '5.5' ) {
-        show("PHP Version need >= 5.5");
+        pr("PHP Version need >= 5.5");
         exit;
     }
 
     if (!getParam('exec')) {
-        show('---- debug mode ---- (你必須要輸入參數 exec 才會真正執行)');
+        pr('---- debug mode ---- (你必須要輸入參數 exec 才會真正執行)');
+    }
+    Lib\Log::record('start PHP '. phpversion() );
+
+    //
+    $mail = Lib\Gmail::getEmailsNotSettingRead();
+    if ($error = Lib\Gmail::getError()) {
+        pr($error, true);
+        exit;
     }
 
-    // test only
-    $i = new Inbox();
-    print_r($i);
+    pr($mail);
 
-    Lib\Log::record('start PHP '. phpversion() );
-    // xxxx();
 
-    show("done", true);
+    pr("done", true);
 }
+
+
