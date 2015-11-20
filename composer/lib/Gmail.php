@@ -35,7 +35,7 @@ class Gmail
 
     /**
      *  取得最舊的 未讀信件
-     *      - 讀取信件後, imap_fetchbody() 會將信件狀態改為 已讀
+     *      - 讀取信件後, 會將信件狀態改為 已讀
      *
      *  @param int $number  - 取得多少封信件
      *  @return array
@@ -72,8 +72,7 @@ class Gmail
     // --------------------------------------------------------------------------------
 
     /**
-     *  取得最舊的一封 未讀信件
-     *      - 讀取信件後, imap_fetchbody() 會將信件狀態改為 已讀
+     *  取得最舊的 未讀信件
      *
      *  @see http://tw2.php.net/manual/en/function.imap-search.php
      *  @param int $number  - 取得多少封信件
@@ -105,8 +104,6 @@ class Gmail
             $bodyText = imap_body($inbox, $id, FT_PEEK);
             list($bodyHeader, $body) = self::parseBody($bodyText, $id);
 
-            //list($content, $imapVersion) = self::fetchBody($inbox, $id);
-
             //
             $headerInfo = imap_headerinfo($inbox, $id);
             //pr($headerInfo);
@@ -136,39 +133,6 @@ class Gmail
         self::close();
         return $infos;
     }
-
-    /**
-     *  fetch body
-     *
-     *      1.2 => html
-     *      1   => text
-     *
-     *  @see https://zh.wikipedia.org/wiki/IMAP
-     *  @return content and content version array
-     */
-/*
-    private static function fetchBody($inbox, $id)
-    {
-        // html
-        $imapVersion = "1.2";
-        $content = imap_fetchbody($inbox, $id, $imapVersion, FT_PEEK);
-        // text
-        if (!$content) {
-            $imapVersion = "1";
-            $content = imap_fetchbody($inbox, $id, $imapVersion, FT_PEEK);
-        }
-
-        // decode
-        $content = quoted_printable_decode($content);
-
-        if ("1.2" === $imapVersion) {
-            $content = strip_tags($content);
-        }
-
-        $content = htmlspecialchars($content);;
-        return [$content, $imapVersion];
-    }
-*/
 
     /**
      *  parse body
