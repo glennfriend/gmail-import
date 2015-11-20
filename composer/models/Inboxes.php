@@ -24,7 +24,7 @@ class Inboxes extends ZendModelNoCache
     {
         $object = new Inbox();
         $object->setId              ( $row['id']                            );
-        $object->setGmailId         ( $row['gmail_id']                      );
+        $object->setMessageId       ( $row['message_id']                    );
         $object->setFromEmail       ( $row['from_email']                    );
         $object->setToEmail         ( $row['to_email']                      );
         $object->setReplyToEmail    ( $row['reply_to_email']                );
@@ -128,7 +128,7 @@ class Inboxes extends ZendModelNoCache
         $list = [
             'fields' => [
                 'id'            => 'id',
-                'gmailId'       => 'gmail_id',
+                'messageId'     => 'message_id',
                 'fromEmail'     => 'from_email',
                 'toEmail'       => 'to_email',
                 'replyToEmail'  => 'reply_to_email',
@@ -149,8 +149,8 @@ class Inboxes extends ZendModelNoCache
         $select = $this->getDbSelect();
         $field = $list['fields'];
 
-        if ( isset($opt['gmailId']) ) {
-            $select->where->and->equalTo( $field['gmailId'], $opt['gmailId'] );
+        if ( isset($opt['messageId']) ) {
+            $select->where->and->equalTo( $field['messageId'], $opt['messageId'] );
         }
         if ( isset($opt['fromEmail']) ) {
             $select->where->and->equalTo( $field['fromEmail'], $opt['fromEmail'] );

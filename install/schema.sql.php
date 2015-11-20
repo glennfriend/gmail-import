@@ -30,13 +30,13 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `inboxes` (
   `id` int(11) unsigned NOT NULL,
-  `gmail_id` int(10) unsigned NOT NULL,
+  `message_id` varchar(255) NOT NULL,
   `from_email` varchar(255) NOT NULL,
-  `to_email` varchar(255) NOT NULL,
   `reply_to_email` varchar(255) NOT NULL,
+  `to_email` varchar(255) NOT NULL,
   `subject` varchar(255) NOT NULL,
   `content` text NOT NULL,
-  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `email_create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `properties` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

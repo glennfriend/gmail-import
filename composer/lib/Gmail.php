@@ -19,6 +19,21 @@ class Gmail
     protected static $errorMessage = null;
 
     /**
+     *  放置 email 附件的目錄
+     */
+    protected static $attachPath = null;
+
+    /**
+     *
+     */
+    public static function init(Array $options)
+    {
+        if (isset($options['attach_path'])) {
+            self::$attachPath = $options['attach_path'];
+        }
+    }
+
+    /**
      *  取得最舊的 未讀信件
      *      - 讀取信件後, imap_fetchbody() 會將信件狀態改為 已讀
      *
@@ -74,7 +89,9 @@ class Gmail
         }
 
         $emails = imap_search($inbox, 'UNSEEN');
-        $readKey = ($isSettingRead ? 0 : FT_PEEK);
+        if (!$emails) {
+            return [];
+        }
 
         $i = 0;
         $infos = [];
@@ -84,20 +101,123 @@ class Gmail
             }
             $i++;
 
+
+            $bodyText = imap_body($inbox, $id, FT_PEEK);
+            list($bodyHeader, $body) = self::parseBody($bodyText, $id);
+
+            //list($content, $imapVersion) = self::fetchBody($inbox, $id);
+
+            //
             $headerInfo = imap_headerinfo($inbox, $id);
+            //pr($headerInfo);
+            //pr(imap_fetchstructure ($inbox, $id));
+
             $infos[] = [
-                'gmail_id'  => $id,
-                'subject'   => $headerInfo->subject,
-                'from'      => $headerInfo->from,
-                'reply_to'  => $headerInfo->reply_to,
-                'to'        => $headerInfo->to,
-                'date'      => $headerInfo->MailDate,
-                'content'   => quoted_printable_decode(imap_fetchbody($inbox, $id, 1, $readKey)),
+                'message_id'        => $headerInfo->message_id,
+                'subject'           => $headerInfo->subject,
+                'from'              => $headerInfo->from,
+                'reply_to'          => $headerInfo->reply_to,
+                'to'                => $headerInfo->to,
+                'date'              => $headerInfo->MailDate,
+                //'content'           => $content,
+                //'content_version'   => $imapVersion,
+                'body_header'       => $bodyHeader,
+                'body'              => htmlspecialchars($body),
             ];
+
+            // 設定為已讀    TODO: 請改用其它方式
+            if ($isSettingRead) {
+                imap_body($inbox, $id, 0);
+            }
+
         }
 
         self::$errorMessage = null;
+        self::close();
         return $infos;
+    }
+
+    /**
+     *  fetch body
+     *
+     *      1.2 => html
+     *      1   => text
+     *
+     *  @see https://zh.wikipedia.org/wiki/IMAP
+     *  @return content and content version array
+     */
+/*
+    private static function fetchBody($inbox, $id)
+    {
+        // html
+        $imapVersion = "1.2";
+        $content = imap_fetchbody($inbox, $id, $imapVersion, FT_PEEK);
+        // text
+        if (!$content) {
+            $imapVersion = "1";
+            $content = imap_fetchbody($inbox, $id, $imapVersion, FT_PEEK);
+        }
+
+        // decode
+        $content = quoted_printable_decode($content);
+
+        if ("1.2" === $imapVersion) {
+            $content = strip_tags($content);
+        }
+
+        $content = htmlspecialchars($content);;
+        return [$content, $imapVersion];
+    }
+*/
+
+    /**
+     *  parse body
+     *
+     *  @return information array
+     */
+    private static function parseBody($body, $id)
+    {
+        static $parser;
+        if (!$parser) {
+            $parser = new \PhpMimeMailParser\Parser();
+        }
+
+
+        $parser->setText($body);
+        //pr($parser); exit;
+
+        // 附件
+        if (self::$attachPath) {
+            $path = self::$attachPath . "/var/attach/{$id}/";
+            $parser->saveAttachments($path);
+            $attachments = $parser->getAttachments();
+            //pr($attachments);
+        }
+
+        $headers = $parser->getHeaders();
+        $body    = $parser->getMessageBody();
+        $body    = self::_minusBodyContent($body);
+
+        return [
+            $headers,
+            $body,
+        ];
+    }
+
+    /**
+     *  解析出來的內容不夠單純
+     *  試著找出一組像 "--001a113d414844af3e0524dc7f0f" 的文字
+     *  該字串後面的值都移除
+     */
+    private static function _minusBodyContent($body)
+    {
+        preg_match('/\-\-[0-9a-z]{28}/s', $body, $output);
+        if ( is_array($output) && count($output)==1 ) {
+            $keyword = $output[0];
+            $index = strpos($body, $keyword);
+            $body = substr($body, 0, $index);
+        }
+        return $body;
     }
 
     /**
@@ -121,7 +241,7 @@ class Gmail
         $password = Config::get('gmail.passwd');
 
         ob_start();
-        $inbox = imap_open($hostname, $email, $password);
+            $inbox = imap_open($hostname, $email, $password);
         ob_end_clean();
 
         if ($errors = imap_errors()) {

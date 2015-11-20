@@ -20,11 +20,11 @@ class Inbox extends BaseObject
                 'storage' => 'getId',
                 'field'   => 'id',
             ],
-            'gmailId' => [
-                'type'    => 'integer',
-                'filters' => ['intval'],
-                'storage' => 'getGmailId',
-                'field'   => 'gmail_id',
+            'messageId' => [
+                'type'    => 'string',
+                'filters' => ['message_trim'],
+                'storage' => 'getMessageId',
+                'field'   => 'message_id',
             ],
             'fromEmail' => [
                 'type'    => 'string',
@@ -76,7 +76,11 @@ class Inbox extends BaseObject
         extends
     ------------------------------------------------------------------------------------------------------------------------ */
 
-
+    // trim
+    protected function filter_message_trim( $value )
+    {
+        return trim($value);
+    }
 
     /* ------------------------------------------------------------------------------------------------------------------------
         lazy loading methods

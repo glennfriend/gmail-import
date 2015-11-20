@@ -31,23 +31,43 @@ function perform()
     }
     Lib\Log::record('start PHP '. phpversion() );
 
+    // 設定 email 附件目錄
+    Lib\Gmail::init([
+        'attach_path' => conf('app.path'),
+    ]);
+
     //
-    $mails = Lib\Gmail::getEmails(2);
+    if (getParam('exec')) {
+        $mails = Lib\Gmail::getEmails();
+    }
+    else {
+        $mails = Lib\Gmail::getEmailsNotSettingRead(2);
+    }
+
     if ($error = Lib\Gmail::getError()) {
         pr($error, true);
         exit;
     }
 
+
     $inboxes = new Inboxes();
     foreach ($mails as $mailInfo) {
+
         $inbox = makeInbox($mailInfo);
-        $result = $inboxes->addInbox($inbox);
-        if ($result) {
-            pr("add success, inbox id = " . $result, true);
+
+        if (getParam('exec')) {
+            $result = $inboxes->addInbox($inbox);
+            if ($result) {
+                pr("add success, message id = {$mailInfo['message_id']}, inbox id = " . $result, true);
+            }
+            else {
+                pr("add error,   message id = {$mailInfo['message_id']} " , true);
+            }
         }
         else {
-            pr("add error, gmail id = " . $mailInfo['gmail_id'], true);
+            pr("all pass,    message id = " . $mailInfo['message_id']);
         }
+
     }
 
     pr("done", true);
@@ -60,20 +80,20 @@ function makeInbox($info)
     $to      = (array) $info['to'][0];
 
     $inbox = new Inbox();
-    $inbox->setGmailId          ( $info['gmail_id']                             );
+    $inbox->setMessageId        ( $info['message_id']                           );
     $inbox->setFromEmail        (    $from['mailbox'] .'@'.    $from['host']    );
     $inbox->setToEmail          (      $to['mailbox'] .'@'.      $to['host']    );
     $inbox->setReplyToEmail     ( $replyTo['mailbox'] .'@'. $replyTo['host']    );
     $inbox->setSubject          ( $info['subject']                              );
-    $inbox->setContent          ( $info['content']                              );
+    $inbox->setContent          ( $info['body']                                 );
     $inbox->setEmailCreateTime  ( strtotime($info['date'])                      );
 
     $inbox->setProperty('info', [
-        'from'      => $info['from'],
-        'reply_to'  => $info['reply_to'],
-        'to'        => $info['to'],
-        'date'      => $info['date'],
-        'content'   => $info['content'],
+        'from'          => $info['from'],
+        'reply_to'      => $info['reply_to'],
+        'to'            => $info['to'],
+        'date'          => $info['date'],
+        'body_header'   => $info['body_header'],
     ]);
     return $inbox;
 }
