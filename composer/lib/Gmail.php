@@ -137,6 +137,7 @@ class Gmail
     /**
      *  parse body
      *
+     *  @see https://github.com/php-mime-mail-parser/php-mime-mail-parser
      *  @return information array
      */
     private static function parseBody($body, $id)
@@ -152,6 +153,7 @@ class Gmail
 
         // 附件
         if (self::$attachPath) {
+            // TODO: id 要改成 message id
             $path = self::$attachPath . "/var/attach/{$id}/";
             $parser->saveAttachments($path);
             $attachments = $parser->getAttachments();

@@ -79,6 +79,8 @@ function makeInbox($info)
     $replyTo = (array) $info['reply_to'][0];
     $to      = (array) $info['to'][0];
 
+    $date    = timezoneConvert( $info['date'], 'UTC', 'America/Los_Angeles' );
+
     $inbox = new Inbox();
     $inbox->setMessageId        ( $info['message_id']                           );
     $inbox->setFromEmail        (    $from['mailbox'] .'@'.    $from['host']    );
@@ -86,7 +88,9 @@ function makeInbox($info)
     $inbox->setReplyToEmail     ( $replyTo['mailbox'] .'@'. $replyTo['host']    );
     $inbox->setSubject          ( $info['subject']                              );
     $inbox->setContent          ( $info['body']                                 );
-    $inbox->setEmailCreateTime  ( strtotime($info['date'])                      );
+    $inbox->setEmailCreateTime  ( strtotime($date)                              );
+
+
 
     $inbox->setProperty('info', [
         'from'          => $info['from'],
@@ -97,3 +101,38 @@ function makeInbox($info)
     ]);
     return $inbox;
 }
+
+function convertTimezone($date)
+{
+    pr( $date );
+    pr( date('Y-m-d H:i:s', $date) );
+}
+
+/**
+ *  時區轉換程式 helper
+ *
+ *  將一個已經格式化的值代入
+ *      - 2000-12-31 00:10:20
+ *      - 19-Nov-2015 03:38:50 +0000
+ *
+ *  並聲明是那一個 timezone
+ *  最後要決定輸出為那一個 timezone
+ *
+ *  @string $timeString - time format
+ *  @string $from       - timezone string
+ *  @string $to         - timezone string
+ *  @return time format
+ */
+function timezoneConvert($timeString, $from, $to)
+{
+    try {
+        $convert = new DateTime($timeString, new DateTimeZone($from));
+        $convert->setTimezone(new DateTimeZone($to));
+        return $convert->format('Y-m-d H:i:s');
+    }
+    catch (Exception $e) {
+        // error
+    }
+    return '1970-01-01 00:00:00';
+}
+
