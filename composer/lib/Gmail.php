@@ -101,13 +101,13 @@ class Gmail
             $i++;
 
 
-            $bodyText = imap_body($inbox, $id, FT_PEEK);
-            list($bodyHeader, $body) = self::parseBody($bodyText, $id);
-
             //
             $headerInfo = imap_headerinfo($inbox, $id);
-            //pr($headerInfo);
+            //pr($headerInfo); exit;
             //pr(imap_fetchstructure ($inbox, $id));
+
+            $bodyText = imap_body($inbox, $id, FT_PEEK);
+            list($bodyHeader, $body) = self::parseBody($bodyText, $headerInfo->message_id);
 
             $infos[] = [
                 'message_id'        => $headerInfo->message_id,
@@ -149,12 +149,12 @@ class Gmail
 
 
         $parser->setText($body);
-        //pr($parser); exit;
+        // pr($parser); exit;
 
         // 附件
         if (self::$attachPath) {
-            // TODO: id 要改成 message id
-            $path = self::$attachPath . "/var/attach/{$id}/";
+            $folderId = md5($id);
+            $path = self::$attachPath . "/var/attach/{$folderId}/";
             $parser->saveAttachments($path);
             $attachments = $parser->getAttachments();
             //pr($attachments);
