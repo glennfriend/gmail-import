@@ -2,8 +2,6 @@
 
 namespace Lib;
 
-use lib;
-
 /**
  *  Gmail Manager
  *
@@ -106,20 +104,20 @@ class Gmail
             $folderId = md5($headerInfo->message_id);
 
             $bodyText = imap_body($inbox, $id, FT_PEEK);
-            list($bodyHeader, $body) = self::parseBody($bodyText, $folderId);
-            $attachments = self::parseAttachments($inbox, $id, $folderId);
-
+            list($bodyHeader, $body, $mailAttachments) = self::parseBody($bodyText, $folderId);
+            $fileAttachments = self::parseAttachments($inbox, $id, $folderId);
 
             $infos[] = [
-                'message_id'    => $headerInfo->message_id,
-                'subject'       => $headerInfo->subject,
-                'from'          => $headerInfo->from,
-                'reply_to'      => $headerInfo->reply_to,
-                'to'            => $headerInfo->to,
-                'date'          => $headerInfo->MailDate,
-                'body_header'   => $bodyHeader,
-                'body'          => htmlspecialchars($body),
-                'attachments'   => $attachments,
+                'message_id'        => $headerInfo->message_id,
+                'subject'           => $headerInfo->subject,
+                'from'              => $headerInfo->from,
+                'reply_to'          => $headerInfo->reply_to,
+                'to'                => $headerInfo->to,
+                'date'              => $headerInfo->MailDate,
+                'body_header'       => $bodyHeader,
+                'body'              => htmlspecialchars($body),
+                'mail_attachments'  => $mailAttachments,
+                'file_attachments'  => $fileAttachments,
             ];
 
             // 設定為已讀    TODO: 請改用其它方式
@@ -205,7 +203,7 @@ class Gmail
             }
             file_put_contents( $path . '/' . $name, $contents);
 
-            $attachmentsInfos = [
+            $attachmentsInfos[] = [
                 'filename'  => $attachment['filename'],
                 'name'      => $attachment['name'],
                 'path'      => $path . '/' . $name,
@@ -232,16 +230,26 @@ class Gmail
 
         $parser->setText($body);
 
+        $attachments = [];
         if (self::$temp) {
             $path = self::$temp . "/var/content/{$folderId}/";
             $parser->saveAttachments($path);
-            // $attachments = $parser->getAttachments();
+            $infos = $parser->getAttachments();
+            foreach ($infos as $info) {
+                $attachments[] = [
+                    'filename'              => $info->getFilename(),
+                    'content_type'          => $info->getContentType(),
+                    'content_disposition'   => $info->getContentDisposition(),
+                    'content_id'            => $info->getContentID(),
+                ];
+            }
+
         }
 
         $headers = $parser->getHeaders();
         $body    = $parser->getMessageBody();
         $body    = self::_minusBodyContent($body);
-        return [$headers, $body];
+        return [$headers, $body, $attachments];
     }
 
     /**

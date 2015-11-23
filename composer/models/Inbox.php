@@ -76,6 +76,21 @@ class Inbox extends BaseObject
         extends
     ------------------------------------------------------------------------------------------------------------------------ */
 
+    public function getAttachments()
+    {
+        $attachments = $this->getProperty('info')['attachments'];
+        if (!$attachments) {
+            return [];
+        }
+
+        return [
+            'file'      => $attachments['file'],
+            'filename'  => $attachments['filename'],
+            'path'      => $attachments['path'],
+        ];
+
+    }
+
     // trim
     protected function filter_message_trim( $value )
     {

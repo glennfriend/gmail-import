@@ -90,15 +90,29 @@ function makeInbox($info)
     $inbox->setContent          ( $info['body']                                 );
     $inbox->setEmailCreateTime  ( strtotime($date)                              );
 
-
-
     $inbox->setProperty('info', [
-        'from'          => $info['from'],
-        'reply_to'      => $info['reply_to'],
-        'to'            => $info['to'],
-        'date'          => $info['date'],
-        'body_header'   => $info['body_header'],
+        'from'              => $info['from'],
+        'reply_to'          => $info['reply_to'],
+        'to'                => $info['to'],
+        'date'              => $info['date'],
+        'body_header'       => $info['body_header'],
+        'mail_attachments'  => $info['mail_attachments'],
+        'file_attachments'  => $info['file_attachments'],
     ]);
+
+    /*
+        // NOTE: you can try the information
+        $inbox->setProperty('info', [
+            'from'              => $info['from'],
+            'reply_to'          => $info['reply_to'],
+            'to'                => $info['to'],
+            'date'              => $info['date'],
+            'body_header'       => $info['body_header'],
+            'mail_attachments'  => $info['mail_attachments'],
+            'file_attachments'  => $info['file_attachments'],
+        ]);
+    */
+
     return $inbox;
 }
 
