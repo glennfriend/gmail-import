@@ -189,13 +189,20 @@ class Gmail
         }
 
         $attachmentsInfos = [];
-        foreach ($infos as $key => $attachment) {
+        foreach ($infos as $index => $attachment) {
             if (!$attachment['is_attachment']) {
                 continue;
             }
 
-            $name     = $attachment['name'];
             $contents = $attachment['attachment'];
+            $name = self::decodeMailString($attachment['name']);
+            if (!$name) {
+                $name = "unknown_{$index}";
+            }
+            $filename = self::decodeMailString($attachment['filename']);
+            if (!$filename) {
+                $filename = "unknown_{$index}";
+            }
 
             $path = self::$temp . "/var/attach/{$folderId}";
             if (!file_exists($path)) {
@@ -203,15 +210,46 @@ class Gmail
             }
             file_put_contents( $path . '/' . $name, $contents);
 
+            $decodeFailName = 'unknown_' . $index;
             $attachmentsInfos[] = [
-                'filename'  => $attachment['filename'],
-                'name'      => $attachment['name'],
+                'name'      => $name,
+                'filename'  => $filename,
                 'path'      => $path . '/' . $name,
             ];
-
         }
 
         return $attachmentsInfos;
+    }
+
+    /**
+     *  example
+     *      =?BIG5?B?pmGyebnYpXEucG5n?=
+     *      -> BIG5 to UTF-8
+     *      -> 地球壽司.png
+     *
+     *  @return name string or false
+     */
+    private static function decodeMailString($code)
+    {
+        $tmp = explode('?', $code);
+        if (!is_array($tmp)) {
+           return false;
+        }
+
+        if (!isset($tmp[4])) {
+           return false;
+        }
+
+        if ( '=' != $tmp[0] ||
+             'B' != $tmp[2] ||
+             '=' != $tmp[4] ) {
+           return false;
+        }
+
+        $type   = $tmp[1];
+        $encode = $tmp[3];
+        $decode = base64_decode($encode);
+        return iconv($type, 'UTF-8', $decode);
     }
 
     /**
