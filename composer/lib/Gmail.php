@@ -1,8 +1,8 @@
 <?php
 
-namespace lib;
+namespace Lib;
 
-use Lib;
+use lib;
 
 /**
  *  Gmail Manager
@@ -19,9 +19,9 @@ class Gmail
     protected static $errorMessage = null;
 
     /**
-     *  放置 email 附件的目錄
+     *  放置 email temp 的目錄
      */
-    protected static $attachPath = null;
+    protected static $temp = null;
 
     /**
      *
@@ -29,7 +29,7 @@ class Gmail
     public static function init(Array $options)
     {
         if (isset($options['attach_path'])) {
-            self::$attachPath = $options['attach_path'];
+            self::$temp = $options['attach_path'];
         }
     }
 
@@ -100,26 +100,26 @@ class Gmail
             }
             $i++;
 
-
             //
             $headerInfo = imap_headerinfo($inbox, $id);
             //pr($headerInfo); exit;
-            //pr(imap_fetchstructure ($inbox, $id));
+            $folderId = md5($headerInfo->message_id);
 
             $bodyText = imap_body($inbox, $id, FT_PEEK);
-            list($bodyHeader, $body) = self::parseBody($bodyText, $headerInfo->message_id);
+            list($bodyHeader, $body) = self::parseBody($bodyText, $folderId);
+            $attachments = self::parseAttachments($inbox, $id, $folderId);
+
 
             $infos[] = [
-                'message_id'        => $headerInfo->message_id,
-                'subject'           => $headerInfo->subject,
-                'from'              => $headerInfo->from,
-                'reply_to'          => $headerInfo->reply_to,
-                'to'                => $headerInfo->to,
-                'date'              => $headerInfo->MailDate,
-                //'content'           => $content,
-                //'content_version'   => $imapVersion,
-                'body_header'       => $bodyHeader,
-                'body'              => htmlspecialchars($body),
+                'message_id'    => $headerInfo->message_id,
+                'subject'       => $headerInfo->subject,
+                'from'          => $headerInfo->from,
+                'reply_to'      => $headerInfo->reply_to,
+                'to'            => $headerInfo->to,
+                'date'          => $headerInfo->MailDate,
+                'body_header'   => $bodyHeader,
+                'body'          => htmlspecialchars($body),
+                'attachments'   => $attachments,
             ];
 
             // 設定為已讀    TODO: 請改用其它方式
@@ -135,39 +135,113 @@ class Gmail
     }
 
     /**
+     *  parse 附件
+     *  "不" 包含內文中的 mime 檔案
+     *
+     *  @return array
+     */
+    private static function parseAttachments($inbox, $id, $folderId)
+    {
+        //
+        $structure = imap_fetchstructure($inbox, $id);
+
+        if (!isset($structure->parts) || count($structure->parts) <= 0) {
+            return [];
+        }
+
+        $infos = [];
+        for ($i = 0; $i < count($structure->parts); $i++) {
+
+            $infos[$i] = array(
+                'is_attachment' => false,
+                'filename' => '',
+                'name' => '',
+                'attachment' => '',
+            );
+
+            if ($structure->parts[$i]->ifdparameters) {
+                foreach($structure->parts[$i]->dparameters as $object) {
+                    if(strtolower($object->attribute) == 'filename') {
+                        $infos[$i]['is_attachment'] = true;
+                        $infos[$i]['filename'] = $object->value;
+                    }
+                }
+            }
+
+            if ($structure->parts[$i]->ifparameters) {
+                foreach($structure->parts[$i]->parameters as $object) {
+                    if(strtolower($object->attribute) == 'name') {
+                        $infos[$i]['is_attachment'] = true;
+                        $infos[$i]['name'] = $object->value;
+                    }
+                }
+            }
+
+            if ($infos[$i]['is_attachment']) {
+                $infos[$i]['attachment'] = imap_fetchbody($inbox, $id, $i+1, FT_PEEK);
+                // 3 = BASE64
+                if ( 3 == $structure->parts[$i]->encoding ) {
+                    $infos[$i]['attachment'] = base64_decode($infos[$i]['attachment']);
+                }
+                // 4 = QUOTED-PRINTABLE
+                elseif ( 4 == $structure->parts[$i]->encoding ) {
+                    $infos[$i]['attachment'] = quoted_printable_decode($infos[$i]['attachment']);
+                }
+            }
+        }
+
+        $attachmentsInfos = [];
+        foreach ($infos as $key => $attachment) {
+            if (!$attachment['is_attachment']) {
+                continue;
+            }
+
+            $name     = $attachment['name'];
+            $contents = $attachment['attachment'];
+
+            $path = self::$temp . "/var/attach/{$folderId}";
+            if (!file_exists($path)) {
+                mkdir($path);
+            }
+            file_put_contents( $path . '/' . $name, $contents);
+
+            $attachmentsInfos = [
+                'filename'  => $attachment['filename'],
+                'name'      => $attachment['name'],
+                'path'      => $path . '/' . $name,
+            ];
+
+        }
+
+        return $attachmentsInfos;
+    }
+
+    /**
      *  parse body
+     *  包含內文中的 mime 檔案
      *
      *  @see https://github.com/php-mime-mail-parser/php-mime-mail-parser
      *  @return information array
      */
-    private static function parseBody($body, $id)
+    private static function parseBody($body, $folderId)
     {
         static $parser;
         if (!$parser) {
             $parser = new \PhpMimeMailParser\Parser();
         }
 
-
         $parser->setText($body);
-        // pr($parser); exit;
 
-        // 附件
-        if (self::$attachPath) {
-            $folderId = md5($id);
-            $path = self::$attachPath . "/var/attach/{$folderId}/";
+        if (self::$temp) {
+            $path = self::$temp . "/var/content/{$folderId}/";
             $parser->saveAttachments($path);
-            $attachments = $parser->getAttachments();
-            //pr($attachments);
+            // $attachments = $parser->getAttachments();
         }
 
         $headers = $parser->getHeaders();
         $body    = $parser->getMessageBody();
         $body    = self::_minusBodyContent($body);
-
-        return [
-            $headers,
-            $body,
-        ];
+        return [$headers, $body];
     }
 
     /**

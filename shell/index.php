@@ -31,7 +31,7 @@ function perform()
     }
     Lib\Log::record('start PHP '. phpversion() );
 
-    // 設定 email 附件目錄
+    // 設定 email temp 目錄
     Lib\Gmail::init([
         'attach_path' => conf('app.path'),
     ]);
@@ -100,12 +100,6 @@ function makeInbox($info)
         'body_header'   => $info['body_header'],
     ]);
     return $inbox;
-}
-
-function convertTimezone($date)
-{
-    pr( $date );
-    pr( date('Y-m-d H:i:s', $date) );
 }
 
 /**
