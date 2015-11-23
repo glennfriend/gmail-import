@@ -86,13 +86,20 @@ function makeInbox($info)
     $inbox->setFromEmail        (    $from['mailbox'] .'@'.    $from['host']    );
     $inbox->setToEmail          (      $to['mailbox'] .'@'.      $to['host']    );
     $inbox->setReplyToEmail     ( $replyTo['mailbox'] .'@'. $replyTo['host']    );
-    $inbox->setFromName         (    $from['personal']                          );
-    $inbox->setToName           (      $to['personal']                          );
-    $inbox->setReplyToName      ( $replyTo['personal']                          );
+
+    if ( isset($from['personal']) ) {
+        $inbox->setFromName ($from['personal']);
+    }
+    if ( isset($to['personal']) ) {
+        $inbox->setToName ($to['personal']);
+    }
+    if ( isset($replyTo['personal']) ) {
+        $inbox->setReplyToName ($replyTo['personal']);
+    }
+
     $inbox->setSubject          ( $info['subject']                              );
     $inbox->setContent          ( $info['body']                                 );
     $inbox->setEmailCreateTime  ( strtotime($date)                              );
-
     $inbox->setProperty('info', [
         'date'              => $info['date'],
         'body_header'       => $info['body_header'],

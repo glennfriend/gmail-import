@@ -120,7 +120,7 @@ class Gmail
                 'file_attachments'  => $fileAttachments,
             ];
 
-            // 設定為已讀    TODO: 請改用其它方式
+            // 設定為已讀
             if ($isSettingRead) {
                 imap_body($inbox, $id, 0);
             }
