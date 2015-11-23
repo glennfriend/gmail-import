@@ -26,8 +26,11 @@ class Inboxes extends ZendModelNoCache
         $object->setId              ( $row['id']                            );
         $object->setMessageId       ( $row['message_id']                    );
         $object->setFromEmail       ( $row['from_email']                    );
-        $object->setToEmail         ( $row['to_email']                      );
         $object->setReplyToEmail    ( $row['reply_to_email']                );
+        $object->setToEmail         ( $row['to_email']                      );
+        $object->setFromName        ( $row['from_name']                     );
+        $object->setReplyToName     ( $row['reply_to_name']                 );
+        $object->setToName          ( $row['to_name']                       );
         $object->setSubject         ( $row['subject']                       );
         $object->setContent         ( $row['content']                       );
         $object->setEmailCreateTime ( strtotime($row['email_create_time'])  );
@@ -127,11 +130,13 @@ class Inboxes extends ZendModelNoCache
         // validate 欄位 白名單
         $list = [
             'fields' => [
-                'id'            => 'id',
                 'messageId'     => 'message_id',
                 'fromEmail'     => 'from_email',
-                'toEmail'       => 'to_email',
                 'replyToEmail'  => 'reply_to_email',
+                'toEmail'       => 'to_email',
+                'fromName'      => 'from_name',
+                'replyToName'   => 'reply_to_name',
+                'toName'        => 'to_name',
                 'subject'       => 'subject',
                 'content'       => 'content',
             ],
@@ -152,15 +157,27 @@ class Inboxes extends ZendModelNoCache
         if ( isset($opt['messageId']) ) {
             $select->where->and->equalTo( $field['messageId'], $opt['messageId'] );
         }
+
         if ( isset($opt['fromEmail']) ) {
             $select->where->and->equalTo( $field['fromEmail'], $opt['fromEmail'] );
-        }
-        if ( isset($opt['toEmail']) ) {
-            $select->where->and->equalTo( $field['toEmail'], $opt['toEmail'] );
         }
         if ( isset($opt['replyToEmail']) ) {
             $select->where->and->equalTo( $field['replyToEmail'], $opt['replyToEmail'] );
         }
+        if ( isset($opt['toEmail']) ) {
+            $select->where->and->equalTo( $field['toEmail'], $opt['toEmail'] );
+        }
+
+        if ( isset($opt['fromName']) ) {
+            $select->where->and->equalTo( $field['fromName'], $opt['fromName'] );
+        }
+        if ( isset($opt['replyToName']) ) {
+            $select->where->and->equalTo( $field['replyToName'], $opt['replyToName'] );
+        }
+        if ( isset($opt['toName']) ) {
+            $select->where->and->equalTo( $field['toName'], $opt['toName'] );
+        }
+
         if ( isset($opt['subject']) ) {
             $select->where->and->like( $field['subject'], '%'.$opt['subject'].'%' );
         }

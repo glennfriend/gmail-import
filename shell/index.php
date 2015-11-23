@@ -86,14 +86,14 @@ function makeInbox($info)
     $inbox->setFromEmail        (    $from['mailbox'] .'@'.    $from['host']    );
     $inbox->setToEmail          (      $to['mailbox'] .'@'.      $to['host']    );
     $inbox->setReplyToEmail     ( $replyTo['mailbox'] .'@'. $replyTo['host']    );
+    $inbox->setFromName         (    $from['personal']                          );
+    $inbox->setToName           (      $to['personal']                          );
+    $inbox->setReplyToName      ( $replyTo['personal']                          );
     $inbox->setSubject          ( $info['subject']                              );
     $inbox->setContent          ( $info['body']                                 );
     $inbox->setEmailCreateTime  ( strtotime($date)                              );
 
     $inbox->setProperty('info', [
-        'from'              => $info['from'],
-        'reply_to'          => $info['reply_to'],
-        'to'                => $info['to'],
         'date'              => $info['date'],
         'body_header'       => $info['body_header'],
         'mail_attachments'  => $info['mail_attachments'],

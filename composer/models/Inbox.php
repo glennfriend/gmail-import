@@ -32,17 +32,35 @@ class Inbox extends BaseObject
                 'storage' => 'getFromEmail',
                 'field'   => 'from_email',
             ],
+            'replyToEmail' => [
+                'type'    => 'string',
+                'filters' => ['strip_tags','trim'],
+                'storage' => 'getReplyToEmail',
+                'field'   => 'reply_to_email',
+            ],
             'toEmail' => [
                 'type'    => 'string',
                 'filters' => ['strip_tags','trim'],
                 'storage' => 'getToEmail',
                 'field'   => 'to_email',
             ],
-            'replyToEmail' => [
+            'fromName' => [
                 'type'    => 'string',
                 'filters' => ['strip_tags','trim'],
-                'storage' => 'getReplyToEmail',
-                'field'   => 'reply_to_email',
+                'storage' => 'getFromName',
+                'field'   => 'from_name',
+            ],
+            'replyToName' => [
+                'type'    => 'string',
+                'filters' => ['strip_tags','trim'],
+                'storage' => 'getReplyToName',
+                'field'   => 'reply_to_name',
+            ],
+            'toName' => [
+                'type'    => 'string',
+                'filters' => ['strip_tags','trim'],
+                'storage' => 'getToName',
+                'field'   => 'to_name',
             ],
             'subject' => [
                 'type'    => 'string',
