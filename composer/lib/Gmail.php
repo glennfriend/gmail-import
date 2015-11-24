@@ -115,8 +115,8 @@ class Gmail
             }
 
             $bodyText = imap_body($inbox, $id, FT_PEEK);
-            list($bodyHeader, $body, $mailAttachments) = self::parseBody($bodyText, $folderId);
-            $fileAttachments = self::parseAttachments($inbox, $id, $folderId);
+            list($bodyHeader, $body, $mailAttachments) = self::_parseBody($bodyText, $folderId);
+            $fileAttachments = self::_parseAttachments($inbox, $id, $folderId);
 
             $infos[] = [
                 'message_id'        => $headerInfo->message_id,
@@ -139,7 +139,7 @@ class Gmail
         }
 
         self::$errorMessage = null;
-        self::close();
+        self::_close();
         return $infos;
     }
 
@@ -149,7 +149,7 @@ class Gmail
      *
      *  @return array
      */
-    private static function parseAttachments($inbox, $id, $folderId)
+    private static function _parseAttachments($inbox, $id, $folderId)
     {
         //
         $structure = imap_fetchstructure($inbox, $id);
@@ -205,11 +205,11 @@ class Gmail
                 continue;
             }
 
-            $name = self::decodeMailString(trim($attachment['name']));
+            $name = self::_decodeMailString(trim($attachment['name']));
             if (!$name) {
                 $name = "unknown_{$index}";
             }
-            $filename = self::getFilenameByName($name);
+            $filename = self::_getFilenameByName($name);
 
             $path = self::$temp . "/var/attach/{$folderId}";
             if (!file_exists($path)) {
@@ -244,7 +244,7 @@ class Gmail
      *
      *  @return name string or false
      */
-    private static function decodeMailString($strings)
+    private static function _decodeMailString($strings)
     {
         if ('=?' !== substr($strings,0,2)) {
             return $strings;
@@ -282,7 +282,7 @@ class Gmail
      *      - 去除不安全的字元
      *      - 不能因為去除字元, 使得檔名有機會重覆
      */
-    private static function getFilenameByName($name)
+    private static function _getFilenameByName($name)
     {
         $extensionName  = pathinfo($name, PATHINFO_EXTENSION);
         $filename       = pathinfo($name, PATHINFO_FILENAME);
@@ -302,7 +302,7 @@ class Gmail
      *  @see https://github.com/php-mime-mail-parser/php-mime-mail-parser
      *  @return information array
      */
-    private static function parseBody($body, $folderId)
+    private static function _parseBody($body, $folderId)
     {
         static $parser;
         if (!$parser) {
@@ -384,7 +384,7 @@ class Gmail
     /**
      *
      */
-    private static function close()
+    private static function _close()
     {
         $inbox = self::_getInboxes();
         imap_close($inbox);
