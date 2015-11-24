@@ -100,8 +100,19 @@ class Gmail
 
             //
             $headerInfo = imap_headerinfo($inbox, $id);
-            //pr($headerInfo); exit;
-            $folderId = md5($headerInfo->message_id);
+            // pr($headerInfo); exit;
+
+            // build folder id
+            if (   isset($headerInfo)
+                && isset($headerInfo->from)
+                && isset($headerInfo->from[0])
+                && isset($headerInfo->from[0]->mailbox)
+            ) {
+                $folderId = $headerInfo->from[0]->mailbox . '-' . md5($headerInfo->message_id);
+            }
+            else {
+                $folderId = md5($headerInfo->message_id);
+            }
 
             $bodyText = imap_body($inbox, $id, FT_PEEK);
             list($bodyHeader, $body, $mailAttachments) = self::parseBody($bodyText, $folderId);
@@ -194,27 +205,23 @@ class Gmail
                 continue;
             }
 
-            $contents = $attachment['attachment'];
-            $name = self::decodeMailString($attachment['name']);
+            $name = self::decodeMailString(trim($attachment['name']));
             if (!$name) {
                 $name = "unknown_{$index}";
             }
-            $filename = self::decodeMailString($attachment['filename']);
-            if (!$filename) {
-                $filename = "unknown_{$index}";
-            }
+            $filename = self::getFilenameByName($name);
 
             $path = self::$temp . "/var/attach/{$folderId}";
             if (!file_exists($path)) {
                 mkdir($path);
             }
-            file_put_contents( $path . '/' . $name, $contents);
+            file_put_contents( $path . '/' . $filename, $attachment['attachment']);
 
             $decodeFailName = 'unknown_' . $index;
             $attachmentsInfos[] = [
                 'name'      => $name,
                 'filename'  => $filename,
-                'path'      => $path . '/' . $name,
+                'path'      => $path . '/' . $filename,
             ];
         }
 
@@ -222,6 +229,9 @@ class Gmail
     }
 
     /**
+     *  解析一串 email 帶來的編碼
+     *  如果開頭不是 "=?" 符號就不處理
+     *
      *  example
      *      =?BIG5?B?pmGyebnYpXEucG5n?=
      *      -> BIG5 to UTF-8
@@ -236,6 +246,10 @@ class Gmail
      */
     private static function decodeMailString($strings)
     {
+        if ('=?' !== substr($strings,0,2)) {
+            return $strings;
+        }
+
         $text = '';
         $items = explode(' ', $strings);
         foreach ($items as $code) {
@@ -260,6 +274,25 @@ class Gmail
             $text .= iconv($type, 'UTF-8', $decode);
         }
         return $text;
+    }
+
+    /**
+     *  檔案名稱的建立
+     *      - 跟原本的檔案有相關
+     *      - 去除不安全的字元
+     *      - 不能因為去除字元, 使得檔名有機會重覆
+     */
+    private static function getFilenameByName($name)
+    {
+        $extensionName  = pathinfo($name, PATHINFO_EXTENSION);
+        $filename       = pathinfo($name, PATHINFO_FILENAME);
+        $filename       = preg_replace("/[^a-zA-Z0-9一-龥\-\_\.]/u", "", $filename);
+        $filename       = str_replace('.', '-', $filename);
+        $filename      .= '-' . md5($name);
+        if ($extensionName) {
+            $filename .= '.' . $extensionName;
+        }
+        return strtolower($filename);
     }
 
     /**
