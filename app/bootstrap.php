@@ -1,4 +1,6 @@
 <?php
+use Symfony\Component\DependencyInjection;
+
 
 function initialize($basePath)
 {
@@ -21,15 +23,37 @@ function initialize($basePath)
     }
 
     date_default_timezone_set(conf('app.timezone'));
+    diInit();
+}
+
+function diInit()
+{
+    $di = di();
 
     // init log folder
-    Lib\Log::init( $basePath . '/var');
+    $di->setDefinition('log', new DependencyInjection\Definition(
+        'Lib\Log'
+    ));
+    $di->get('log')->init( conf('app.path') . '/var' );
 
     // init email temp folder
-    Lib\Gmail::init([
+    $di->setDefinition('gmail', new DependencyInjection\Definition(
+        'Lib\Gmail'
+    ));
+    $di->get('gmail')->init([
         'temp_path' => conf('app.path') . '/var',
     ]);
+}
 
+function di()
+{
+    static $container;
+    if ($container) {
+        return $container;
+    }
+
+    $container = new DependencyInjection\ContainerBuilder();
+    return $container;
 }
 
 function conf($key)
@@ -43,7 +67,9 @@ function pr($data, $writeLog=false)
         print_r($data);
 
         if ($writeLog) {
-            Lib\Log::record(print_r($data, true));
+            di()->get('log')->record(
+                print_r($data, true)
+            );
         }
     }
     else {
@@ -51,7 +77,7 @@ function pr($data, $writeLog=false)
         echo "\n";
 
         if ($writeLog) {
-            Lib\Log::record($data);
+            di()->get('log')->record($data);
         }
     }
 }

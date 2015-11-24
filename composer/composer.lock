@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fe795605afc16ad035aef76193226141",
-    "content-hash": "94fbd6ac20e1886cde4617ae7f3b1fc4",
+    "hash": "de8f827b07adc2f9aace9536a977be19",
+    "content-hash": "32cf81ee77f31b9ef4869389b9ac643d",
     "packages": [
         {
             "name": "helper",
@@ -32,16 +32,12 @@
                 "reference": "",
                 "shasum": null
             },
-            "require": {
-                "php": ">=5.5"
-            },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Lib\\": ""
                 }
-            },
-            "description": "lib"
+            }
         },
         {
             "name": "nette/mail",
@@ -231,6 +227,68 @@
                 "mime"
             ],
             "time": "2015-11-12 20:24:17"
+        },
+        {
+            "name": "symfony/dependency-injection",
+            "version": "v2.7.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dependency-injection.git",
+                "reference": "7a201bf08c29e47075047cbb378724ad46dfe217"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/7a201bf08c29e47075047cbb378724ad46dfe217",
+                "reference": "7a201bf08c29e47075047cbb378724ad46dfe217",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "conflict": {
+                "symfony/expression-language": "<2.6"
+            },
+            "require-dev": {
+                "symfony/config": "~2.2",
+                "symfony/expression-language": "~2.6",
+                "symfony/yaml": "~2.1"
+            },
+            "suggest": {
+                "symfony/config": "",
+                "symfony/proxy-manager-bridge": "Generate service proxies to lazy load them",
+                "symfony/yaml": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\DependencyInjection\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony DependencyInjection Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-11-23 10:17:36"
         },
         {
             "name": "zendframework/zend-db",
