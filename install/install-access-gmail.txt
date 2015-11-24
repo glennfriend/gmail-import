@@ -10,6 +10,7 @@ install imap
     make lr5
 
     phpbrew ext install imap -- --with-kerberos --with-imap-ssl --with-imap=/usr/local/imap-2007f
+    phpbrew ext enable iconv
 
 setting gmail
 

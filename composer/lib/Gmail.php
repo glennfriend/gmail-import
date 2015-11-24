@@ -227,29 +227,39 @@ class Gmail
      *      -> BIG5 to UTF-8
      *      -> 地球壽司.png
      *
+     *      =?ISO-2022-JP?B?GyRCQHYwYTUhGyhCX3NuYXBzaG90MjAw?= =?ISO-2022-JP?B?NzA5MTcyMzU0MzkuanBn?=
+     *      -> 空白間隔, 重新組合
+     *      -> ISO-2022-JP to UTF-8
+     *      -> 洗衣機_snapshot20070917235439.jpg
+     *
      *  @return name string or false
      */
-    private static function decodeMailString($code)
+    private static function decodeMailString($strings)
     {
-        $tmp = explode('?', $code);
-        if (!is_array($tmp)) {
-           return false;
-        }
+        $text = '';
+        $items = explode(' ', $strings);
+        foreach ($items as $code) {
+            $tmp = explode('?', $code);
+            if (!is_array($tmp)) {
+               return false;
+            }
 
-        if (!isset($tmp[4])) {
-           return false;
-        }
+            if (!isset($tmp[4])) {
+               return false;
+            }
 
-        if ( '=' != $tmp[0] ||
-             'B' != $tmp[2] ||
-             '=' != $tmp[4] ) {
-           return false;
-        }
+            if ( '=' != $tmp[0] ||
+                 'B' != $tmp[2] ||
+                 '=' != $tmp[4] ) {
+               return false;
+            }
 
-        $type   = $tmp[1];
-        $encode = $tmp[3];
-        $decode = base64_decode($encode);
-        return iconv($type, 'UTF-8', $decode);
+            $type   = $tmp[1];
+            $encode = $tmp[3];
+            $decode = base64_decode($encode);
+            $text .= iconv($type, 'UTF-8', $decode);
+        }
+        return $text;
     }
 
     /**

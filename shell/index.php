@@ -97,9 +97,9 @@ function makeInbox($info)
         $inbox->setReplyToName ($replyTo['personal']);
     }
 
-    $inbox->setSubject          ( $info['subject']                              );
-    $inbox->setContent          ( $info['body']                                 );
-    $inbox->setEmailCreateTime  ( strtotime($date)                              );
+    $inbox->setSubject          ( $info['subject']  );
+    $inbox->setContent          ( $info['body']     );
+    $inbox->setEmailCreateTime  ( strtotime($date)  );
     $inbox->setProperty('info', [
         'date'              => $info['date'],
         'body_header'       => $info['body_header'],
