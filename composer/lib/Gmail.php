@@ -26,8 +26,8 @@ class Gmail
      */
     public static function init(Array $options)
     {
-        if (isset($options['attach_path'])) {
-            self::$temp = $options['attach_path'];
+        if (isset($options['temp_path'])) {
+            self::$temp = $options['temp_path'];
         }
     }
 
@@ -211,7 +211,7 @@ class Gmail
             }
             $filename = self::_getFilenameByName($name);
 
-            $path = self::$temp . "/var/attach/{$folderId}";
+            $path = self::$temp . "/attach/{$folderId}";
             if (!file_exists($path)) {
                 mkdir($path);
             }
@@ -313,7 +313,7 @@ class Gmail
 
         $attachments = [];
         if (self::$temp) {
-            $path = self::$temp . "/var/content/{$folderId}/";
+            $path = self::$temp . "/content/{$folderId}/";
             $parser->saveAttachments($path);
             $infos = $parser->getAttachments();
             foreach ($infos as $info) {

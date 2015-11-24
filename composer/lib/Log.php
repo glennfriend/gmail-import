@@ -28,12 +28,12 @@ class Log
     }
 
     /**
-     *  error log
+     *  system log
      */
     public static function record( $content )
     {
         $content = date("Y-m-d H:i:s") . ' - '. $content;
-        self::write( 'log.log', $content );
+        self::write( 'system.log', $content );
     }
 
     /* --------------------------------------------------------------------------------

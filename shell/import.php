@@ -16,7 +16,7 @@ exit;
 // 
 // --------------------------------------------------------------------------------
 
-/**
+/*
  * 
  */
 function perform()
@@ -30,11 +30,6 @@ function perform()
         pr('---- debug mode ---- (你必須要輸入參數 exec 才會真正執行)');
     }
     Lib\Log::record('start PHP '. phpversion() );
-
-    // 設定 email temp 目錄
-    Lib\Gmail::init([
-        'attach_path' => conf('app.path'),
-    ]);
 
     //
     if (getParam('exec')) {

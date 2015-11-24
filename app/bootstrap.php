@@ -6,6 +6,11 @@ function initialize($basePath)
     ini_set('html_errors','Off');
     ini_set('display_errors','On');
 
+    if ( phpversion() < '5.5' ) {
+        pr("PHP Version need >= 5.5");
+        exit;
+    }
+
     require_once $basePath . '/composer/vendor/autoload.php';
 
     // init config
@@ -17,8 +22,13 @@ function initialize($basePath)
 
     date_default_timezone_set(conf('app.timezone'));
 
-    // init other
+    // init log folder
     Lib\Log::init( $basePath . '/var');
+
+    // init email temp folder
+    Lib\Gmail::init([
+        'temp_path' => conf('app.path') . '/var',
+    ]);
 
 }
 
