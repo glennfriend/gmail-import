@@ -1,6 +1,10 @@
+==== 1.1.0 ====
+Major Highlights
+    + 讀取資料表 & 顯示資料
+
 ==== 1.0.0 ====
 Major Highlights
-    + 讀取 gmail 並且寫入資料表
+    + 匯入 gmail 並且寫入資料表
 Improvements
 
 Changes
