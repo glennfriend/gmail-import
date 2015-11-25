@@ -123,7 +123,7 @@ class Inboxes extends ZendModel
         $opt += [
             '_order'        => 'id,DESC',
             '_page'         => 1,
-            '_itemsPerPage' => Config::get('db.items_per_page')
+            '_itemsPerPage' => Lib\Config::get('db.items_per_page')
         ];
         return $this->findInboxesReal( $opt );
     }
@@ -147,6 +147,7 @@ class Inboxes extends ZendModel
         // validate 欄位 白名單
         $list = [
             'fields' => [
+                'id'            => 'id',
                 'messageId'     => 'message_id',
                 'fromEmail'     => 'from_email',
                 'replyToEmail'  => 'reply_to_email',
