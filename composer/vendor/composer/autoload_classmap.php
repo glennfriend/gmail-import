@@ -55,6 +55,5 @@ return array(
     'Nette\\Utils\\UnknownImageFileException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
     'Nette\\Utils\\Validators' => $vendorDir . '/nette/utils/src/Utils/Validators.php',
     'ZendModel' => $baseDir . '/models/ZendModel.php',
-    'ZendModelNoCache' => $baseDir . '/models/ZendModelNoCache.php',
     'ZendModelWhiteListHelper' => $baseDir . '/models/ZendModelWhiteListHelper.php',
 );

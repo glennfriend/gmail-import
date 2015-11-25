@@ -31,7 +31,7 @@ function perform()
         $mails = di('gmail')->getEmails();
     }
     else {
-        $mails = di('gmail')->getEmailsNotSettingRead(1);
+        $mails = di('gmail')->getEmailsNotSettingRead();
     }
 
     if ($error = di('gmail')->getError()) {
@@ -39,8 +39,8 @@ function perform()
         exit;
     }
 
-
     $inboxes = new Inboxes();
+    $messages = [];
     foreach ($mails as $mailInfo) {
 
         $inbox = makeInbox($mailInfo);
@@ -48,18 +48,24 @@ function perform()
         if (getParam('exec')) {
             $result = $inboxes->addInbox($inbox);
             if ($result) {
-                pr("add success, message id = {$mailInfo['message_id']}, inbox id = " . $result, true);
+                $messages[] = ['add success', $mailInfo['message_id'], $result];
             }
             else {
-                pr("add error,   message id = {$mailInfo['message_id']} " , true);
+                $messages[] = ['add error', $mailInfo['message_id'], ''];
             }
         }
         else {
-            pr("all pass,    message id = " . $mailInfo['message_id']);
+            $messages[] = ['pass', $mailInfo['message_id'], ''];
         }
 
     }
 
+    pr(
+        Helper\Console::table(
+            ['status','message id', 'inbox id'],
+            $messages
+        )
+    );
     pr("done", true);
 }
 

@@ -4,6 +4,7 @@
         "php-mime-mail-parser/php-mime-mail-parser": "2.1.*",
 
         "symfony/dependency-injection": "2.*",
+        "symfony/console": "2.*",
         "zendframework/zend-db": "2.*",
         "doctrine/cache": "1.*",
         "lib": "*",

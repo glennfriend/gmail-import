@@ -10,6 +10,7 @@ return array(
     'Zend\\Hydrator\\' => array($vendorDir . '/zendframework/zend-hydrator/src'),
     'Zend\\Db\\' => array($vendorDir . '/zendframework/zend-db/src'),
     'Symfony\\Component\\DependencyInjection\\' => array($vendorDir . '/symfony/dependency-injection'),
+    'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'PhpMimeMailParser\\' => array($vendorDir . '/php-mime-mail-parser/php-mime-mail-parser/src'),
     'Lib\\' => array($vendorDir . '/Lib'),
     'Helper\\' => array($vendorDir . '/Helper'),
