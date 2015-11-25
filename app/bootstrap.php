@@ -109,6 +109,33 @@ function getCliParam($key)
     return null;
 }
 
+/**
+ *  取得所有的參數
+ */
+function getParams()
+{
+    if (isCli()) {
+        return getCliParams();
+    }
+    else {
+        pr('未實作 - 5234895723498572394573824');
+        exit;
+    }
+}
+
+/**
+ *  get command line value
+ *
+ *  @return string|int or null
+ */
+function getCliParams()
+{
+    global $argv;
+    $allParams = $argv;
+    array_shift($allParams);
+    return $allParams;
+}
+
 function isCli()
 {
     return PHP_SAPI === 'cli';
@@ -155,50 +182,11 @@ function diInit()
     ]);
 
     // init cache
-    //$di->register('cache', 
-    /*
-    $di->setDefinition('cache', new DependencyInjection\Definition(
-        'Illuminate\Cache\CacheManager',
-        [
-            'config' => [
-                'cache.driver'  => 'file',
-                'cache.path'    => conf('app.path') . '/var/cache',
-                'cache.prefix'  => 'cache_',
-            ]
-        ]
-    ));
-    $di->get('cache')->driver('file');
-    */
-/*
-    $cacheManager = new Illuminate\Cache\CacheManager([
-        'files' => 'file',
-        'config' => [
-            'cache.default' => 'files',
-            'cache.stores.files' => [
-                'driver'  => 'file',
-                'path'    => conf('app.path') . '/var/cache',
-            ],
-//            'cache.driver'  => 'file',
-            'cache.path'    => conf('app.path') . '/var/cache',
-            'cache.prefix'  => 'cache_',
-        ]
-    ]);
-    pr($cacheManager);
-    pr($cacheManager->driver());
-*/
-
     $cachePath = conf('app.path') . '/var/cache';
     $di->setDefinition('cache', new DependencyInjection\Definition(
         'Bridge\Cache'
     ));
     $di->get('cache')->init($cachePath);
-
-
-
-    //$cacheDriver = new Doctrine\Common\Cache\FilesystemCache(conf('app.path') . '/var/cache');
-
-    //pr($cacheDriver);
-
 }
 
 
