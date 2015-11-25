@@ -4,15 +4,31 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "de8f827b07adc2f9aace9536a977be19",
-    "content-hash": "32cf81ee77f31b9ef4869389b9ac643d",
+    "hash": "a7e29c949348934d6906310aab5f4bcf",
+    "content-hash": "84159909eac772a433f1ac19e7307135",
     "packages": [
         {
-            "name": "helper",
+            "name": "Bridge",
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "./helper/",
+                "url": "./Bridge/",
+                "reference": "",
+                "shasum": null
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bridge\\": ""
+                }
+            }
+        },
+        {
+            "name": "Helper",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./Helper/",
                 "reference": "",
                 "shasum": null
             },
@@ -24,11 +40,11 @@
             }
         },
         {
-            "name": "lib",
+            "name": "Lib",
             "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "./lib/",
+                "url": "./Lib/",
                 "reference": "",
                 "shasum": null
             },
@@ -38,6 +54,76 @@
                     "Lib\\": ""
                 }
             }
+        },
+        {
+            "name": "doctrine/cache",
+            "version": "v1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/cache.git",
+                "reference": "2b9cec5a5e722010cbebc91713d4c11eaa064d5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/2b9cec5a5e722010cbebc91713d4c11eaa064d5e",
+                "reference": "2b9cec5a5e722010cbebc91713d4c11eaa064d5e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2"
+            },
+            "conflict": {
+                "doctrine/common": ">2.2,<2.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=3.7",
+                "predis/predis": "~1.0",
+                "satooshi/php-coveralls": "~0.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Common\\Cache\\": "lib/Doctrine/Common/Cache"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
+                    "name": "Johannes Schmitt",
+                    "email": "schmittjoh@gmail.com"
+                }
+            ],
+            "description": "Caching library offering an object-oriented API for many cache backends",
+            "homepage": "http://www.doctrine-project.org",
+            "keywords": [
+                "cache",
+                "caching"
+            ],
+            "time": "2015-11-02 18:35:48"
         },
         {
             "name": "nette/mail",

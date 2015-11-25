@@ -1,9 +1,9 @@
 {
     "version":  "1.0.0",
-    "name":     "lib",
+    "name":     "Bridge",
     "autoload": {
         "psr-4": {
-            "Lib\\": ""
+            "Bridge\\": ""
         }
     }
 }

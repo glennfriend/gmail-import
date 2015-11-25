@@ -3,8 +3,10 @@
 /**
  *
  */
-class Inboxes extends ZendModelNoCache
+class Inboxes extends ZendModel
 {
+    const CACHE_INBOX = 'cache_inbox';
+
     /**
      *  table name
      */
@@ -70,7 +72,22 @@ class Inboxes extends ZendModelNoCache
      */
     public function preChangeHook($object)
     {
+        // first, remove cache
+        $this->removeCache($object);
+    }
 
+    /**
+     *  remove cache
+     *  @param object
+     */
+    protected function removeCache($object)
+    {
+        if ( $object->getId() <= 0 ) {
+            return;
+        }
+
+        $cacheKey = $this->getFullCacheKey( $object->getId(), Inboxes::CACHE_INBOX );
+        Bridge\Cache::remove( $cacheKey );
     }
 
     /* ================================================================================
@@ -84,7 +101,7 @@ class Inboxes extends ZendModelNoCache
      */
     public function getInbox( $id )
     {
-        $object = $this->getObject( 'id', $id );
+        $object = $this->getObject( 'id', $id, Inboxes::CACHE_INBOX );
         if ( !$object ) {
             return false;
         }

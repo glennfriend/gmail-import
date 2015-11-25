@@ -11,6 +11,8 @@ return array(
     'Zend\\Db\\' => array($vendorDir . '/zendframework/zend-db/src'),
     'Symfony\\Component\\DependencyInjection\\' => array($vendorDir . '/symfony/dependency-injection'),
     'PhpMimeMailParser\\' => array($vendorDir . '/php-mime-mail-parser/php-mime-mail-parser/src'),
-    'Lib\\' => array($vendorDir . '/lib'),
-    'Helper\\' => array($vendorDir . '/helper'),
+    'Lib\\' => array($vendorDir . '/Lib'),
+    'Helper\\' => array($vendorDir . '/Helper'),
+    'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),
+    'Bridge\\' => array($vendorDir . '/Bridge'),
 );

@@ -5,17 +5,23 @@
 
         "symfony/dependency-injection": "2.*",
         "zendframework/zend-db": "2.*",
+        "doctrine/cache": "1.*",
         "lib": "*",
-        "helper": "*"
+        "helper": "*",
+        "bridge": "*"
     },
     "repositories": [
         {
             "type": "path",
-            "url": "./helper"
+            "url": "./Bridge"
         },
         {
             "type": "path",
-            "url": "./lib"
+            "url": "./Helper"
+        },
+        {
+            "type": "path",
+            "url": "./Lib"
         }
     ],
     "autoload": {

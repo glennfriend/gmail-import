@@ -24,18 +24,17 @@ function perform()
     if (!getParam('exec')) {
         pr('---- debug mode ---- (你必須要輸入參數 exec 才會真正執行)');
     }
-    $di = di();
-    $di->get('log')->record('start PHP '. phpversion() );
+    di('log')->record('start PHP '. phpversion() );
 
     //
     if (getParam('exec')) {
-        $mails = $di->get('gmail')->getEmails();
+        $mails = di('gmail')->getEmails();
     }
     else {
-        $mails = $di->get('gmail')->getEmailsNotSettingRead(2);
+        $mails = di('gmail')->getEmailsNotSettingRead(1);
     }
 
-    if ($error = $di->get('gmail')->getError()) {
+    if ($error = di('gmail')->getError()) {
         pr($error, true);
         exit;
     }

@@ -26,36 +26,6 @@ function initialize($basePath)
     diInit();
 }
 
-function diInit()
-{
-    $di = di();
-
-    // init log folder
-    $di->setDefinition('log', new DependencyInjection\Definition(
-        'Lib\Log'
-    ));
-    $di->get('log')->init( conf('app.path') . '/var' );
-
-    // init email temp folder
-    $di->setDefinition('gmail', new DependencyInjection\Definition(
-        'Lib\Gmail'
-    ));
-    $di->get('gmail')->init([
-        'temp_path' => conf('app.path') . '/var',
-    ]);
-}
-
-function di()
-{
-    static $container;
-    if ($container) {
-        return $container;
-    }
-
-    $container = new DependencyInjection\ContainerBuilder();
-    return $container;
-}
-
 function conf($key)
 {
     return Lib\Config::get($key);
@@ -67,7 +37,7 @@ function pr($data, $writeLog=false)
         print_r($data);
 
         if ($writeLog) {
-            di()->get('log')->record(
+            di('log')->record(
                 print_r($data, true)
             );
         }
@@ -77,7 +47,7 @@ function pr($data, $writeLog=false)
         echo "\n";
 
         if ($writeLog) {
-            di()->get('log')->record($data);
+            di('log')->record($data);
         }
     }
 }
@@ -143,3 +113,93 @@ function isCli()
 {
     return PHP_SAPI === 'cli';
 }
+
+
+/**
+ *  包裝了 Symfony Dependency-Injection
+ *  提供了簡易的取用方式 DI->get( $getParam )
+ */
+function di($getParam=null)
+{
+    static $container;
+    if ($container) {
+        if ($getParam) {
+            return $container->get($getParam);
+        }
+        return $container;
+    }
+
+    $container = new DependencyInjection\ContainerBuilder();
+    return $container;
+}
+
+/**
+ *
+ */
+function diInit()
+{
+    $di = di();
+
+    // init log folder
+    $di->setDefinition('log', new DependencyInjection\Definition(
+        'Lib\Log'
+    ));
+    $di->get('log')->init( conf('app.path') . '/var' );
+
+    // init email temp folder
+    $di->setDefinition('gmail', new DependencyInjection\Definition(
+        'Lib\Gmail'
+    ));
+    $di->get('gmail')->init([
+        'temp_path' => conf('app.path') . '/var',
+    ]);
+
+    // init cache
+    //$di->register('cache', 
+    /*
+    $di->setDefinition('cache', new DependencyInjection\Definition(
+        'Illuminate\Cache\CacheManager',
+        [
+            'config' => [
+                'cache.driver'  => 'file',
+                'cache.path'    => conf('app.path') . '/var/cache',
+                'cache.prefix'  => 'cache_',
+            ]
+        ]
+    ));
+    $di->get('cache')->driver('file');
+    */
+/*
+    $cacheManager = new Illuminate\Cache\CacheManager([
+        'files' => 'file',
+        'config' => [
+            'cache.default' => 'files',
+            'cache.stores.files' => [
+                'driver'  => 'file',
+                'path'    => conf('app.path') . '/var/cache',
+            ],
+//            'cache.driver'  => 'file',
+            'cache.path'    => conf('app.path') . '/var/cache',
+            'cache.prefix'  => 'cache_',
+        ]
+    ]);
+    pr($cacheManager);
+    pr($cacheManager->driver());
+*/
+
+    $cachePath = conf('app.path') . '/var/cache';
+    $di->setDefinition('cache', new DependencyInjection\Definition(
+        'Bridge\Cache'
+    ));
+    $di->get('cache')->init($cachePath);
+
+
+
+    //$cacheDriver = new Doctrine\Common\Cache\FilesystemCache(conf('app.path') . '/var/cache');
+
+    //pr($cacheDriver);
+
+}
+
+
+
