@@ -166,28 +166,26 @@ function di($getParam=null)
 function diInit()
 {
     $di = di();
+    $basePath = conf('app.path');
 
-    // init log folder
+    // log folder
     $di->setDefinition('log', new DependencyInjection\Definition(
         'Lib\Log'
     ));
-    $di->get('log')->init( conf('app.path') . '/var' );
+    $di->get('log')->init( $basePath . '/var' );
 
-    // init email temp folder
+    // gmail temp folder
     $di->setDefinition('gmail', new DependencyInjection\Definition(
         'Lib\Gmail'
     ));
     $di->get('gmail')->init([
-        'temp_path' => conf('app.path') . '/var',
+        'temp_path' => $basePath . '/var',
     ]);
 
-    // init cache
-    $cachePath = conf('app.path') . '/var/cache';
+    // cache
     $di->setDefinition('cache', new DependencyInjection\Definition(
         'Bridge\Cache'
     ));
-    $di->get('cache')->init($cachePath);
+    $di->get('cache')->init( $basePath . '/var/cache' );
+
 }
-
-
-

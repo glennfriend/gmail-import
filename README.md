@@ -16,5 +16,6 @@ $ vi app/config/*.php
 
 ### Execute
 ```sh
-$ php shell/index.php
+$ php shell/import.php
+$ php shell/get.php
 ```
