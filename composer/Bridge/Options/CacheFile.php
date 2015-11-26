@@ -1,23 +1,17 @@
 <?php
-namespace Bridge;
+namespace Bridge\Options;
+use Doctrine;
 
-/**
- *
- */
-class Cache implements Tie\Cache
+class CacheFile
 {
-
-    /**
-     *  cache
-     */
-    protected static $cache = array();
+    protected $cache;
 
     /**
      *  init
      */
-    public static function init($cachePath)
+    public function __construct($cachePath)
     {
-        self::$cache = new Options\CacheFile($cachePath);
+        $this->cache = new Doctrine\Common\Cache\FilesystemCache($cachePath);
     }
 
     /* --------------------------------------------------------------------------------
@@ -27,9 +21,9 @@ class Cache implements Tie\Cache
     /**
      *  get cache
      */
-    public static function get($key)
+    public function get($key)
     {
-        return self::$cache->get($key);
+        return $this->cache->fetch($key);
     }
 
     /* --------------------------------------------------------------------------------
@@ -39,34 +33,34 @@ class Cache implements Tie\Cache
     /**
      *  set cache
      */
-    public static function set($key, $value)
+    public function set($key, $value)
     {
-        self::$cache->set($key, $value);
+        $this->cache->save($key, $value);
     }
 
     /**
      *  remove cache
      */
-    public static function remove($key)
+    public function remove($key)
     {
-        self::$cache->remove($key);
+        $this->cache->delete($key);
     }
 
     /**
      *  remove cache by prefix
      *  移除該值開頭的所有快取
      */
-    public static function removePrefix($prefix)
+    public function removePrefix($prefix)
     {
-        self::$cache->removePrefix($key);
+        $this->cache->deleteByPrefix($key);
     }
 
     /**
      *  clean all cache data
      */
-    public static function flush()
+    public function flush()
     {
-        self::$cache->flush();
+        $this->cache->deleteAll();
     }
 
 }
