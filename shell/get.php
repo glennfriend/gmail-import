@@ -67,10 +67,11 @@ function perform()
 function show($inbox)
 {
     pr('------------------------------------------------------------');
-    pr('id:      ' . $inbox->getId()        );
-    pr('from:    ' . $inbox->getFromEmail() );
-    pr('to:      ' . $inbox->getToEmail()   );
-    pr('subject: ' . $inbox->getSubject()   );
+    pr('id:      ' . $inbox->getId()                                    );
+    pr('time:    ' . date('Y-m-d H:i:s', $inbox->getEmailCreateTime())  );
+    pr('from:    ' . $inbox->getFromEmail()                             );
+    pr('to:      ' . $inbox->getToEmail()                               );
+    pr('subject: ' . $inbox->getSubject()                               );
     pr('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     pr($inbox->getContent());
     pr('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
