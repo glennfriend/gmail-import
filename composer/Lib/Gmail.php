@@ -311,7 +311,6 @@ class Gmail
      */
     private static function _buildFolderId($headerInfo)
     {
-        // build folder id
         if (   isset($headerInfo)
             && isset($headerInfo->from)
             && isset($headerInfo->from[0])
