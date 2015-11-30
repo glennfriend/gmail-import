@@ -35,12 +35,12 @@ function perform()
         ->setBody("Hello World.")
     ;
 
-    $mailer = new Nette\Mail\SmtpMailer(array(
-            'host'      => 'smtp.gmail.com',
-            'username'  => conf('gmail.email'),
-            'password'  => conf('gmail.passwd'),
-            'secure'    => 'ssl',
-    ));
+    $mailer = new Nette\Mail\SmtpMailer([
+        'host'      => 'smtp.gmail.com',
+        'username'  => conf('gmail.email'),
+        'password'  => conf('gmail.passwd'),
+        'secure'    => 'ssl',
+    ]);
     $mailer->send($mail);
 
 }

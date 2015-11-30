@@ -156,6 +156,7 @@ class Gmail
 
             $bodyText = imap_body($inbox, $id, FT_PEEK);
             list($bodyHeader, $body, $mailAttachments) = self::_parseBody($bodyText, $folderId);
+
             $fileAttachments = self::_parseAttachments($inbox, $id, $folderId);
 
             $headerInfo->from     = self::_tidyMailObject($headerInfo->from);
@@ -369,17 +370,31 @@ class Gmail
 
     /**
      *  解析出來的內容不夠單純
-     *  試著找出一組像 "--001a113d414844af3e0524dc7f0f" 的文字
+     *
+     *  如果找出像下面的文字
+     *      --001a113d414844af3e0524dc7f0f
+     *      ----------zjjj2ndobn
+     *
      *  該字串後面的值都移除
      */
     private static function _minusBodyContent($body)
     {
-        preg_match('/\-\-[0-9a-z]{28}/s', $body, $output);
+        preg_match('/--[0-9a-z]{28}/s', $body, $output);
         if ( is_array($output) && count($output)==1 ) {
             $keyword = $output[0];
             $index = strpos($body, $keyword);
             $body = substr($body, 0, $index);
+            return $body;
         }
+
+        preg_match('/----------[0-9a-z]{10}/s', $body, $output);
+        if ( is_array($output) && count($output)==1 ) {
+            $keyword = $output[0];
+            $index = strpos($body, $keyword);
+            $body = substr($body, 0, $index);
+            return $body;
+        }
+
         return $body;
     }
 
