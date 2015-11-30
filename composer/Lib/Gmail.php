@@ -65,6 +65,55 @@ class Gmail
         return self::$errorMessage;
     }
 
+    /**
+     *  解析一串 email 帶來的編碼
+     *  如果開頭不是 "=?" 符號就不處理
+     *
+     *  example
+     *      =?BIG5?B?pmGyebnYpXEucG5n?=
+     *      -> BIG5 to UTF-8
+     *      -> 地球壽司.png
+     *
+     *      =?ISO-2022-JP?B?GyRCQHYwYTUhGyhCX3NuYXBzaG90MjAw?= =?ISO-2022-JP?B?NzA5MTcyMzU0MzkuanBn?=
+     *      -> 空白間隔, 重新組合
+     *      -> ISO-2022-JP to UTF-8
+     *      -> 洗衣機_snapshot20070917235439.jpg
+     *
+     *  @return name string or false
+     */
+    public static function decodeMailString($strings)
+    {
+        if ('=?' !== substr($strings,0,2)) {
+            return $strings;
+        }
+
+        $text = '';
+        $items = explode(' ', $strings);
+        foreach ($items as $code) {
+            $tmp = explode('?', $code);
+            if (!is_array($tmp)) {
+               return false;
+            }
+
+            if (!isset($tmp[4])) {
+               return false;
+            }
+
+            if ( '=' != $tmp[0] ||
+                 'B' != $tmp[2] ||
+                 '=' != $tmp[4] ) {
+               return false;
+            }
+
+            $type   = $tmp[1];
+            $encode = $tmp[3];
+            $decode = base64_decode($encode);
+            $text  .= @ iconv($type, 'UTF-8//TRANSLIT//IGNORE', $decode);
+
+        }
+        return $text;
+    }
+
     // --------------------------------------------------------------------------------
     // private
     // --------------------------------------------------------------------------------
@@ -103,24 +152,19 @@ class Gmail
             // pr($headerInfo); exit;
 
             // build folder id
-            if (   isset($headerInfo)
-                && isset($headerInfo->from)
-                && isset($headerInfo->from[0])
-                && isset($headerInfo->from[0]->mailbox)
-            ) {
-                $folderId = $headerInfo->from[0]->mailbox . '-' . md5($headerInfo->message_id);
-            }
-            else {
-                $folderId = md5($headerInfo->message_id);
-            }
+            $folderId = self::_buildFolderId($headerInfo);
 
             $bodyText = imap_body($inbox, $id, FT_PEEK);
             list($bodyHeader, $body, $mailAttachments) = self::_parseBody($bodyText, $folderId);
             $fileAttachments = self::_parseAttachments($inbox, $id, $folderId);
 
+            $headerInfo->from     = self::_tidyMailObject($headerInfo->from);
+            $headerInfo->reply_to = self::_tidyMailObject($headerInfo->reply_to);
+            $headerInfo->to       = self::_tidyMailObject($headerInfo->to);
+
             $infos[] = [
                 'message_id'        => $headerInfo->message_id,
-                'subject'           => $headerInfo->subject,
+                'subject'           => self::decodeMailString($headerInfo->subject),
                 'from'              => $headerInfo->from,
                 'reply_to'          => $headerInfo->reply_to,
                 'to'                => $headerInfo->to,
@@ -205,7 +249,7 @@ class Gmail
                 continue;
             }
 
-            $name = self::_decodeMailString(trim($attachment['name']));
+            $name = self::decodeMailString(trim($attachment['name']));
             if (!$name) {
                 $name = "unknown_{$index}";
             }
@@ -217,7 +261,6 @@ class Gmail
             }
             file_put_contents( $path . '/' . $filename, $attachment['attachment']);
 
-            $decodeFailName = 'unknown_' . $index;
             $attachmentsInfos[] = [
                 'name'      => $name,
                 'filename'  => $filename,
@@ -226,54 +269,6 @@ class Gmail
         }
 
         return $attachmentsInfos;
-    }
-
-    /**
-     *  解析一串 email 帶來的編碼
-     *  如果開頭不是 "=?" 符號就不處理
-     *
-     *  example
-     *      =?BIG5?B?pmGyebnYpXEucG5n?=
-     *      -> BIG5 to UTF-8
-     *      -> 地球壽司.png
-     *
-     *      =?ISO-2022-JP?B?GyRCQHYwYTUhGyhCX3NuYXBzaG90MjAw?= =?ISO-2022-JP?B?NzA5MTcyMzU0MzkuanBn?=
-     *      -> 空白間隔, 重新組合
-     *      -> ISO-2022-JP to UTF-8
-     *      -> 洗衣機_snapshot20070917235439.jpg
-     *
-     *  @return name string or false
-     */
-    private static function _decodeMailString($strings)
-    {
-        if ('=?' !== substr($strings,0,2)) {
-            return $strings;
-        }
-
-        $text = '';
-        $items = explode(' ', $strings);
-        foreach ($items as $code) {
-            $tmp = explode('?', $code);
-            if (!is_array($tmp)) {
-               return false;
-            }
-
-            if (!isset($tmp[4])) {
-               return false;
-            }
-
-            if ( '=' != $tmp[0] ||
-                 'B' != $tmp[2] ||
-                 '=' != $tmp[4] ) {
-               return false;
-            }
-
-            $type   = $tmp[1];
-            $encode = $tmp[3];
-            $decode = base64_decode($encode);
-            $text .= iconv($type, 'UTF-8', $decode);
-        }
-        return $text;
     }
 
     /**
@@ -286,13 +281,48 @@ class Gmail
     {
         $extensionName  = pathinfo($name, PATHINFO_EXTENSION);
         $filename       = pathinfo($name, PATHINFO_FILENAME);
-        $filename       = preg_replace("/[^a-zA-Z0-9一-龥\-\_\.]/u", "", $filename);
+        $filename       = str_replace(' ', '-', $filename);
         $filename       = str_replace('.', '-', $filename);
-        $filename      .= '-' . md5($name);
+        $filename       = preg_replace("/[^a-zA-Z0-9一-龥\-\_\.]/u", "", $filename);
+        $filename       = preg_replace("/[-]+/", "-", $filename);
+        $filename      .= '-' . substr(md5($name), 0, 6);
         if ($extensionName) {
             $filename .= '.' . $extensionName;
         }
         return strtolower($filename);
+    }
+
+    /**
+     *
+     */
+    private static function _tidyMailObject($mailObjects)
+    {
+        foreach ($mailObjects as $index => $mailObject) {
+            if (isset($mailObject->personal)) {
+                $mailObject->personal = self::decodeMailString($mailObject->personal);
+            }
+            $mailObjects[$index] = $mailObject;
+        }
+        return $mailObjects;
+    }
+
+    /**
+     *  build folder id
+     */
+    private static function _buildFolderId($headerInfo)
+    {
+        // build folder id
+        if (   isset($headerInfo)
+            && isset($headerInfo->from)
+            && isset($headerInfo->from[0])
+            && isset($headerInfo->from[0]->mailbox)
+        ) {
+            $folderId = $headerInfo->from[0]->mailbox . '-' . md5($headerInfo->message_id);
+        }
+        else {
+            $folderId = md5($headerInfo->message_id);
+        }
+        return $folderId;
     }
 
     /**
