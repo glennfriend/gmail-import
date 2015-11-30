@@ -48,21 +48,21 @@ function perform()
         if (getParam('exec')) {
             $result = $inboxes->addInbox($inbox);
             if ($result) {
-                $messages[] = ['add success', $mailInfo['message_id'], $result];
+                $messages[] = ['add success', $mailInfo['message_id'], $mailInfo['subject'], $result];
             }
             else {
-                $messages[] = ['add error', $mailInfo['message_id'], ''];
+                $messages[] = ['add error', $mailInfo['message_id'], $mailInfo['subject'], ''];
             }
         }
         else {
-            $messages[] = ['pass', $mailInfo['message_id'], ''];
+            $messages[] = ['pass', $mailInfo['message_id'], $mailInfo['subject'], ''];
         }
 
     }
 
     pr(
         Helper\Console::table(
-            ['status','message id', 'inbox id'],
+            ['status','message id', 'Subject', 'inbox id'],
             $messages
         )
     );

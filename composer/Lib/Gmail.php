@@ -331,14 +331,14 @@ class Gmail
      *  @see https://github.com/php-mime-mail-parser/php-mime-mail-parser
      *  @return information array
      */
-    private static function _parseBody($body, $folderId)
+    private static function _parseBody($originBody, $folderId)
     {
         static $parser;
         if (!$parser) {
             $parser = new \PhpMimeMailParser\Parser();
         }
 
-        $parser->setText($body);
+        $parser->setText($originBody);
 
         $attachments = [];
         if (self::$temp) {
@@ -359,6 +359,11 @@ class Gmail
         $headers = $parser->getHeaders();
         $body    = $parser->getMessageBody();
         $body    = self::_minusBodyContent($body);
+
+        // 如果解析不出內容的時候
+        if (!$body) {
+            $body = $originBody;
+        }
         return [$headers, $body, $attachments];
     }
 
