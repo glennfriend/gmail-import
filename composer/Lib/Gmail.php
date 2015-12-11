@@ -379,22 +379,26 @@ class Gmail
      */
     private static function _minusBodyContent($body)
     {
-        preg_match('/--[0-9a-z]{28}/s', $body, $output);
-        if ( is_array($output) && count($output)==1 ) {
-            $keyword = $output[0];
-            $index = strpos($body, $keyword);
-            $body = substr($body, 0, $index);
-            return $body;
-        }
+        $reFilterContent = function($re, $body)
+        {
+            preg_match($re, $body, $output);
+            if ( is_array($output) && count($output)==1 ) {
+                $keyword = $output[0];
+                $index = strpos($body, $keyword);
+                return substr($body, 0, $index);
+            }
+            return false;
+        };
 
-        preg_match('/----------[0-9a-z]{10}/s', $body, $output);
-        if ( is_array($output) && count($output)==1 ) {
-            $keyword = $output[0];
-            $index = strpos($body, $keyword);
-            $body = substr($body, 0, $index);
-            return $body;
+        $filterRegularExpressions = [
+            '/--[0-9a-z]{28}/s',
+            '/----------[0-9a-z]{10}/s',
+        ];
+        foreach ($filterRegularExpressions as $re) {
+            if ($result = $reFilterContent($re, $body)) {
+                return $result;
+            }
         }
-
         return $body;
     }
 

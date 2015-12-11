@@ -5,7 +5,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主機: localhost
--- 產生時間： 2015 年 11 月 23 日 09:40
+-- 產生時間： 2015 年 12 月 11 日 08:35
 -- 伺服器版本: 5.5.44-0ubuntu0.14.04.1
 -- PHP 版本： 5.5.22
 
@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS `inboxes` (
 -- 資料表索引 `inboxes`
 --
 ALTER TABLE `inboxes`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `message_id` (`message_id`);
 
 --
 -- 在匯出的資料表使用 AUTO_INCREMENT
