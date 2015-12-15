@@ -26,6 +26,18 @@ class Inbox extends BaseObject
                 'storage' => 'getMessageId',
                 'field'   => 'message_id',
             ],
+            'replyToMessageId' => array(
+                'type'    => 'string',
+                'filters' => array('message_trim'),
+                'storage' => 'getReplyToMessageId',
+                'field'   => 'reply_to_message_id',
+            ),
+            'referenceMessageIds' => array(
+                'type'    => 'string',
+                'filters' => array('message_trim'),
+                'storage' => 'getReferenceMessageIds',
+                'field'   => 'reference_message_ids',
+            ),
             'fromEmail' => [
                 'type'    => 'string',
                 'filters' => ['strip_tags','trim'],

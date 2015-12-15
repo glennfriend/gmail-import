@@ -164,16 +164,18 @@ class Gmail
             $headerInfo->to       = self::_tidyMailObject($headerInfo->to);
 
             $infos[] = [
-                'message_id'        => $headerInfo->message_id,
-                'subject'           => self::decodeMailString($headerInfo->subject),
-                'from'              => $headerInfo->from,
-                'reply_to'          => $headerInfo->reply_to,
-                'to'                => $headerInfo->to,
-                'date'              => $headerInfo->MailDate,
-                'body_header'       => $bodyHeader,
-                'body'              => htmlspecialchars($body),
-                'mail_attachments'  => $mailAttachments,
-                'file_attachments'  => $fileAttachments,
+                'message_id'            => $headerInfo->message_id,
+                'reply_to_message_id'   => isset($headerInfo->in_reply_to) ? $headerInfo->in_reply_to : '',
+                'reference_message_ids' => isset($headerInfo->references)  ? $headerInfo->references  : '',
+                'subject'               => self::decodeMailString($headerInfo->subject),
+                'from'                  => $headerInfo->from,
+                'reply_to'              => $headerInfo->reply_to,
+                'to'                    => $headerInfo->to,
+                'date'                  => $headerInfo->MailDate,
+                'body_header'           => $bodyHeader,
+                'body'                  => htmlspecialchars($body),
+                'mail_attachments'      => $mailAttachments,
+                'file_attachments'      => $fileAttachments,
             ];
 
             // 設定為已讀

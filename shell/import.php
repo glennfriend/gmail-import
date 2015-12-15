@@ -78,10 +78,12 @@ function makeInbox($info)
     $date    = timezoneConvert( $info['date'], 'UTC', 'America/Los_Angeles' );
 
     $inbox = new Inbox();
-    $inbox->setMessageId        ( $info['message_id']                           );
-    $inbox->setFromEmail        (    $from['mailbox'] .'@'.    $from['host']    );
-    $inbox->setToEmail          (      $to['mailbox'] .'@'.      $to['host']    );
-    $inbox->setReplyToEmail     ( $replyTo['mailbox'] .'@'. $replyTo['host']    );
+    $inbox->setMessageId            ( $info['message_id']                       );
+    $inbox->setReplyToMessageId     ( $info['reply_to_message_id']              );
+    $inbox->setReferenceMessageIds  ( $info['reference_message_ids']            );
+    $inbox->setFromEmail            (    $from['mailbox'] .'@'.    $from['host']);
+    $inbox->setToEmail              (      $to['mailbox'] .'@'.      $to['host']);
+    $inbox->setReplyToEmail         ( $replyTo['mailbox'] .'@'. $replyTo['host']);
 
     if ( isset($from['personal']) ) {
         $inbox->setFromName ($from['personal']);
