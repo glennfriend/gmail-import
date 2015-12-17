@@ -6,9 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'BaseObject' => $baseDir . '/models/BaseObject.php',
-    'Inbox' => $baseDir . '/models/Inbox.php',
-    'Inboxes' => $baseDir . '/models/Inboxes.php',
+    'BaseObject' => $baseDir . '/../app/models/BaseObject.php',
+    'Inbox' => $baseDir . '/../app/models/Inbox.php',
+    'Inboxes' => $baseDir . '/../app/models/Inboxes.php',
     'Nette\\ArgumentOutOfRangeException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
     'Nette\\DeprecatedException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
     'Nette\\DirectoryNotFoundException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
@@ -54,6 +54,6 @@ return array(
     'Nette\\Utils\\Strings' => $vendorDir . '/nette/utils/src/Utils/Strings.php',
     'Nette\\Utils\\UnknownImageFileException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
     'Nette\\Utils\\Validators' => $vendorDir . '/nette/utils/src/Utils/Validators.php',
-    'ZendModel' => $baseDir . '/models/ZendModel.php',
-    'ZendModelWhiteListHelper' => $baseDir . '/models/ZendModelWhiteListHelper.php',
+    'ZendModel' => $baseDir . '/../app/models/ZendModel.php',
+    'ZendModelWhiteListHelper' => $baseDir . '/../app/models/ZendModelWhiteListHelper.php',
 );

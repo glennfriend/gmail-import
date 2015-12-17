@@ -14,19 +14,19 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./Bridge"
+            "url": "../app/Bridge"
         },
         {
             "type": "path",
-            "url": "./Helper"
+            "url": "../app/Helper"
         },
         {
             "type": "path",
-            "url": "./Lib"
+            "url": "../app/Lib"
         }
     ],
     "autoload": {
-        "classmap": ["models"]
+        "classmap": ["../app/models"]
     }
     
 }
