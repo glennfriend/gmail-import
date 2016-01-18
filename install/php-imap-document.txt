@@ -1,0 +1,26 @@
+我們管理的是 service @ gmail.com
+
+    如果使用者 "a" 發送郵件至 "service"
+    <add> (經由程式匯入後, 會建立一組資料)
+        a           - from
+        service     - to
+        message_id  - 每封信件都有一個獨立的 id
+
+    客服 "service" 回信給 "a"
+    <add>
+        service     - from
+        a           - to
+        message_id  - 獨立 id
+        in_reply_to - 某一個 message_id
+        references  - 原寄信件的 message_id (root message_id)
+
+    在連續的信件往返中
+    所有信件的 references 都會是第一封信件的 message_id
+    所以可以經由該值建立 "信件串主題"
+
+    即使在回信時, 是指定任何一封信信件
+    信件的 references 依然是第一封信件的 message_id
+    而指定回信的信件, 會是放置在 in_reply_to 欄位
+    
+
+    
